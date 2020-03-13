@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": false,
+    "experimentalDecorators": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "es2019",
+    "pretty": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "sourceMap": false,
+    "inlineSourceMap": true,
+    "outDir": "lib",
+    "strict": false,
+    "declaration": true,
+    "declarationDir": "lib/types"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
+}
