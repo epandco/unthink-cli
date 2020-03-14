@@ -1,0 +1,14 @@
+{
+  "delay": 2500,
+  "watch": [
+    "./lib/server",
+    "./lib/content",
+    ".env"
+  ],
+  "ignore": [
+    "./public",
+    "./src",
+    "./scripts"
+  ],
+  "ext": "js,json,html"
+}

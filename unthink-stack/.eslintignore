@@ -1,0 +1,19 @@
+# /node_modules/* in the project root is ignored by default
+# build artifacts
+dist/*
+build/*
+/lib/*
+/public/*
+coverage/*
+
+# data definition files
+**/*.d.ts
+
+# spec files
+**/*.spec.ts
+
+# development environment scripts
+/scripts/*
+/src/client/webpack.*.js
+/src/client/riot-preprocessors.js
+/src/client/riot-typescript-transformer.js

@@ -1,0 +1,28 @@
+version: 0.2
+env:
+  variables:
+    "TAGNAME": ""
+phases:
+  install:
+    runtime-versions:
+      nodejs: 12
+  pre_build:
+    commands:
+      - echo Nothing to do in the pre_build phase. . .
+  build:
+    commands:
+      - echo Build started on `date`
+      - sh scripts/build.sh
+  post_build:
+    commands:
+      - echo Build completed on `date`
+artifacts:
+  files:
+    - 'lib/**/*'
+    - 'public/**/*'
+    - 'package.json'
+    - '.env'
+    - 'scripts/AfterInstall.sh'
+    - 'appspec.yml'
+  name: build.zip
+

@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block body %}
+
+<hello-world/>
+
+{% endblock %}
+
+{% block scripts_bottom %}
+
+<script src="/public/js/hello-world.bundle.js?v={{ APP_VERSION }}"></script>
+
+{% endblock %}
