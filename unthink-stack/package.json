@@ -2,7 +2,7 @@
   "name": "unthink-stack",
   "version": "0.1.0",
   "description": "A TypeScript full-stack solution",
-  "main": "index.js",
+  "main": "lib/server/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "env-check": "node ./scripts/env-check.js",
