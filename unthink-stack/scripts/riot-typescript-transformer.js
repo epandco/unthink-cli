@@ -13,26 +13,6 @@ const fs = require('fs');
 const RIOT_FILE_TYPINGS = path.join(process.cwd(), 'src', 'client', 'typings.d.ts');
 const CLIENT_ROOT_PATH = path.join(process.cwd(), 'src', 'client');
 
-// Helper function for logging out error messages.
-function reportDiagnostic(diagnostic, formatHost) {
-  if (diagnostic && diagnostic.file) {
-    const {line, character} = diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start);
-    const message = ts.flattenDiagnosticMessageText(diagnostic.messageText, formatHost.getNewLine());
-    // console.log(`${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`);
-    console.log(ts.formatDiagnosticsWithColorAndContext([diagnostic], formatHost));
-  } else {
-    console.error(
-      'Error',
-      diagnostic.code,
-      ':',
-      ts.flattenDiagnosticMessageText(
-        diagnostic.messageText,
-        formatHost.getNewLine()
-      )
-    );
-  }
-}
-
 /**
  * Custom module resolver for the TypeScript compiler.
  * https://github.com/microsoft/TypeScript/wiki/Using-the-Compiler-API#customizing-module-resolution
