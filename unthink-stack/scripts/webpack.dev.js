@@ -20,7 +20,9 @@ module.exports = merge(common, {
       cert: path.join(process.cwd(), 'certs', 'localhost.crt')
     },
     publicPath: '/public/js/',
-    stats: 'minimal'
+    stats: {
+      all: false
+    }
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin()
