@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "A cli for creating projects in the unthink stack.",
   "types": "lib/types/types.d.ts",
+  "unthink": {
+    "bin-version": "",
+    "bin-base-url": ""
+  },
   "bin": {
     "unthink": "bin/unthink"
   },
@@ -35,6 +39,7 @@
     "tsconfig.json",
     "tslint.json",
     "lib",
+    "unthink-stack",
     "LICENSE",
     "readme.md",
     "docs",
@@ -42,6 +47,8 @@
   ],
   "license": "MIT",
   "dependencies": {
+    "@types/fs-extra": "^8.1.0",
+    "fs-extra": "^8.1.0",
     "gluegun": "latest"
   },
   "devDependencies": {

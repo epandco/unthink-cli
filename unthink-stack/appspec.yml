@@ -1,0 +1,15 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /data/express/temp/
+permissions:
+  - object: /data/express/temp/
+    pattern: "**"
+    owner: www-data
+    group: www-data
+    mode: 754
+hooks:
+  AfterInstall:
+    - location: scripts/AfterInstall.sh
+      timeout: 180

@@ -1,0 +1,61 @@
+<hello-world>
+
+  <h1>{ state.message }</h1>
+
+  <script type="ts">
+    import {RiotComponentExport} from 'riot';
+
+    interface State {
+      message: string;
+    }
+
+    interface HelloWorld extends RiotComponentExport<never, State> {
+      state: State;
+    }
+
+    function build(): HelloWorld {
+      return {
+        state: {
+          message: ''
+        },
+
+        onBeforeMount(): void {
+          this.fetchMessage()
+          .then((message: string) => {
+            this.update({
+              message: message
+            });
+          })
+          .catch((err: Error) => {
+            console.error(err);
+          });
+        },
+
+        async fetchMessage(): Promise<string> {
+          const response = await window.fetch(
+            '/api/message',
+            {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            }
+          );
+          if (response.ok) {
+            return (await response.json())['message'];
+          }
+          throw Error('Could not retrieve message.');
+        }
+      };
+    }
+
+    export default build;
+
+  </script>
+
+  <style type="scss">
+    :host {
+      display: block;
+    }
+  </style>
+</hello-world>

@@ -1,11 +1,9 @@
-import { GluegunCommand } from 'gluegun';
+import { GluegunCommand, GluegunToolbox } from 'gluegun';
 
 const command: GluegunCommand = {
   name: 'unthink',
-  run: async toolbox => {
-    const { print } = toolbox;
-
-    print.info('Welcome to your CLI');
+  run: async (toolbox: GluegunToolbox) => {
+    toolbox.print.info('Unthink');
   },
 };
 
