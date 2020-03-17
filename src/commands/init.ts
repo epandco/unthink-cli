@@ -14,7 +14,8 @@ async function modifyPackageJson(path: string, name: string): Promise<void> {
   pkg.name = name;
   pkg.version = '1.0.0';
   pkg.license = 'UNLICENSED';
-  pkg.authors = [];
+  pkg.author = '';
+  pkg.contributors = [];
   pkg.private = true;
   pkg.description = '';
 
