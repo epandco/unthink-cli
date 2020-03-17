@@ -18,7 +18,7 @@ async function modifyPackageJson(path: string, name: string): Promise<void> {
   pkg.private = true;
   pkg.description = '';
 
-  delete pkg.repoistory;
+  delete pkg.repository;
   delete pkg.homepage;
 
   await fsExtra.writeJSON(path, pkg, {
