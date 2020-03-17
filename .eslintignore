@@ -3,7 +3,6 @@
 dist/*
 build/*
 /lib/*
-/public/*
 coverage/*
 
 # data definition files
@@ -12,8 +11,5 @@ coverage/*
 # spec files
 **/*.spec.ts
 
-# development environment scripts
-/scripts/*
-/src/client/webpack.*.js
-/src/client/riot-preprocessors.js
-/src/client/riot-typescript-transformer.js
+# stack
+/unthink-stack/*
