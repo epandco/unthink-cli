@@ -95,7 +95,7 @@
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.5.4",
     "nunjucks": "^3.2.0",
-    "nunjucks-reource-renderer": "git+https://github.com/epandco/nunjucks-resource-renderer#a9fe9d22ac47f7e178de53737004a936d7c9bacd",
+    "nunjucks-resource-renderer": "git+https://github.com/epandco/nunjucks-resource-renderer#a9fe9d22ac47f7e178de53737004a936d7c9bacd",
     "pino-pretty": "^3.6.0",
     "reflect-metadata": "^0.1.13",
     "resource-decorator": "git+https://github.com/epandco/resource-decorator#03f424a173b7376d52ed60126ac2da9e1387704f"
