@@ -8,7 +8,7 @@ import {defaultContainer} from './config/di-container';
 import { registerResource } from 'express-register-resource';
 import { ResourceType, registerDefaultRenderer } from 'resource-decorator';
 import { HelloWorldResource } from './resources/hello-world-resource';
-import { NunjucksResourceRenderer } from 'nunjucks-reource-renderer';
+import { NunjucksResourceRenderer } from 'nunjucks-resource-renderer';
 
 const app: express.Application = express();
 app.use(cookieParser());
