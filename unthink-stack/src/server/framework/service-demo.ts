@@ -1,5 +1,6 @@
 import { ServiceResult } from './service-result';
-import { ServiceDefinition, HandlerContext } from './service-definition';
+import { ServiceDefinition, HandlerContext, TemplateDefintion } from './service-definition';
+import { TemplateResult } from './template-result';
 
 
 /**
@@ -61,23 +62,25 @@ const sd: ServiceDefinition = {
 
       return result;
     },
-/*
-    // This would throw an error because of duplicate 'GET'
-    'GET': (ctx: HandlerContext): Promise<ServiceResult> => {
-    ...
-
-    }
-*/
-/*
-    // This will throw a compiler error because 'BAD' is not valid option for the key
-    'BAD': (ctx: HandlerContext): Promise<ServiceResult> => {
-    ...
-
-    }
-*/
   }
 };
 
+/****** For templates ******/
+
+const td: TemplateDefintion = {
+  '/home': {
+    // Virtually no need for a class here just can directly map request to a view
+    'GET': async (ctx: HandlerContext): Promise<TemplateResult> => {
+      return TemplateResult.view('home');
+    },
+  },
+  '/login': {
+    // Virtually no need for a class here just can directly map request to a view
+    'GET': async (ctx: HandlerContext): Promise<TemplateResult> => {
+      return TemplateResult.redirect('www.google.com');
+    },
+  }
+}
 
 /**
  * This is a quick brain dump of looping through the service definition
