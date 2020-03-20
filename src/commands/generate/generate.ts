@@ -6,7 +6,8 @@ const generate: GluegunCommand = {
   description: 'Generate files from templates',
 
   run: async (toolbox: GluegunToolbox) => {
-    toolbox.print.info('TODO: generators!');
+
+    toolbox.print.info('TODO: list generators here.');
   },
 };
 
