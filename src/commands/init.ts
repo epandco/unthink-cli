@@ -8,28 +8,11 @@ const ignorePath = [
   'unthink-stack/node_modules/',
 ];
 
-async function modifyPackageJson(path: string, name: string): Promise<void> {
-  const pkg: Record<string, unknown> = await fsExtra.readJSON(path);
-
-  pkg.name = name;
-  pkg.version = '1.0.0';
-  pkg.license = 'UNLICENSED';
-  pkg.author = '';
-  pkg.contributors = [];
-  pkg.private = true;
-  pkg.description = '';
-
-  delete pkg.repository;
-  delete pkg.homepage;
-
-  await fsExtra.writeJSON(path, pkg, {
-    spaces: 2
-  });
-}
 
 const command: GluegunCommand = {
   name: 'init',
   alias: ['i'],
+  description: 'Start a new project',
 
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const projectName = toolbox.parameters.first;
@@ -72,7 +55,20 @@ const command: GluegunCommand = {
       }
     });
 
-    await modifyPackageJson(path.join(targetPath, 'package.json'), projectName);
+    await toolbox.package.loadAndUpdate(
+      path.join(targetPath, 'package.json'),
+      {
+        name: projectName,
+        version: '1.0.0',
+        license: 'UNLICENSED',
+        author: '',
+        contributors: [],
+        private: true,
+        description: '',
+        repository: null,
+        homepage: null
+      }
+    );
 
     // move existing readme to preserve it.
     await fsExtra.move(
