@@ -27,10 +27,6 @@
     "build-sass": "./node_modules/.bin/sass src/client/sass/main.scss public/css/main.css --style=compressed",
     "build-public": "./node_modules/.bin/copyfiles -u 3 \"./src/client/public/**/*\" ./public"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/epandco/unthink-stack.git"
-  },
   "keywords": [
     "typescript",
     "riot",
@@ -39,9 +35,6 @@
   ],
   "author": "EP+Co",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/epandco/unthink-stack/issues"
-  },
   "homepage": "https://github.com/epandco/unthink-stack#readme",
   "devDependencies": {
     "@babel/core": "^7.8.6",
