@@ -1,13 +1,15 @@
 import { GluegunToolbox, GluegunCommand } from 'gluegun';
 
-const entry: GluegunCommand = {
+const entryGenerator: GluegunCommand = {
   name: 'entry',
+  alias: ['e'],
   hidden: true,
+  description: 'Create a new Webpack entry',
 
   run: async (toolbox: GluegunToolbox) => {
 
-    toolbox.print.info('TODO: entry generator should make entries!');
+    toolbox.print.error('TODO: entry generator should make entries!');
   },
 };
 
-export default entry;
+export default entryGenerator;
