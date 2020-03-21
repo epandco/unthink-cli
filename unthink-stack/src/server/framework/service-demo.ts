@@ -1,7 +1,6 @@
 import { ServiceResult } from './service-result';
-import { HandlerContext } from './resource-definition';
 import { TemplateResult } from './template-result';
-import { defineApiResource, defineTemplateResource, ResourceDefinition } from './resource-definition';
+import {  ResourceDefinition, data, view } from './resource-definition';
 
 
 /**
@@ -24,85 +23,63 @@ class TestService {
   }
 }
 
-const apiDef = defineApiResource({
-  routes: {
-    'test/service': {
-      'GET': (ctx: HandlerContext): Promise<ServiceResult> => {
-        const ts = new TestService();
-        const result = ts.echo(ctx.query?.num ?? '');
-        return result;
+const userDef: ResourceDefinition = {
+  basePath: '/users',
+  middleware: [
+    // if we had middleware, this is optional just making an empty array to demonstrate it's here
+  ],
+  routes: [
+    view(
+      '/', // yields /users
+      {
+        'GET': async (): Promise<TemplateResult> => {
+          return TemplateResult.view('users.html');
+        },
       },
-    }
-  }
-});
+    ),
+    data(
+      '/', // yields /api/users by default but can change via prefix parameter on data
+      {
+        'GET': async (ctx) => {
+          const ts = new TestService();
 
-const tempDef = defineTemplateResource({
-  routes: {
-    '/home': {
-      // Virtually no need for a class here just can directly map request to a view
-      'GET': async (_ctx: HandlerContext): Promise<TemplateResult> => {
-        return TemplateResult.view('home');
-      },
-    },
-    '/login': {
-      // Virtually no need for a class here just can directly map request to a view
-      'GET': async (_ctx: HandlerContext): Promise<TemplateResult> => {
-        return TemplateResult.redirect('www.google.com');
-      },
-    }
-  }
-});
-
-console.log(apiDef);
-console.log(tempDef)
-
-function print(resource: ResourceDefinition): void {
-  switch (resource.kind) {
-  case 'TEMPLATE':
-    console.log('template alright');
-    break;
-  case 'API':
-    for (const k in resource.routes) {
-      const route = resource.routes[k];
-      for (const m in route) {
-        switch (m) {
-        case 'GET':
-          const f = route.GET;
-
-          const ctx: HandlerContext = {
-            query: {num: '124'}
-          };
-
-          if (!f) {
-            continue;
+          if (ctx.query) {
+            return ts.echo(ctx.query.num);
           }
 
-          f(ctx).then(r => {
-            // Will print 124 in this case
-            if (r.isOk) {
-              console.log(r.value);
-              return;
-            }
-
-            if (r.hasError) {
-              console.log(r.error);
-              return;
-            }
-
-            if (r.notFound) {
-              console.log('not found!');
-              return;
-            }
-          });
-          break;
-        default:
-          throw Error('whoops!');
-          break;
+          throw new Error('Query was undefined');
         }
       }
+    )
+  ]
+};
+
+console.log(userDef);
+
+function print(resource: ResourceDefinition): void {
+  console.log(resource.basePath);
+  for (const k in resource.routes) {
+    const route = resource.routes[k];
+
+    for (const m in route) {
+      switch (m) {
+      case 'GET':
+        const rh = route.GET;
+
+        switch (rh.__routeType) {
+        case 'VIEW':
+          console.log('View Route');
+          console.lo;
+        }
+
+        break;
+      default:
+        throw Error('whoops!');
+        break;
+      }
     }
-    break;
-}
+  }
+  break;
 }
 
 print(apiDef);
