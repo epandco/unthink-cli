@@ -4,7 +4,7 @@ import {pathExists, ensureDir} from 'fs-extra';
 
 // TODO: move this to extension
 function toPascalCase(input: string): string {
-  return `${input}`
+  return input
     .replace(new RegExp(/[-_]+/, 'g'), ' ')
     .replace(new RegExp(/[^\w\s]/, 'g'), '')
     .replace(
