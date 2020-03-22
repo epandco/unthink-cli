@@ -9,23 +9,12 @@ interface RouteContext {
   body?: object;
 }
 
-/**
- * Represents the generic handler used by all route handlers.
- *
- * This may change a bit. The result might end being a wrapper like
- *
- * RouteResult<Result> where result would be ServiceResult | TemplateResult.
- *
- * Rationale there is that we may want to in the handlers set cookies / headers but not want this in the
- * service result for example. We probably do not want the service layer returning cookies/headers in the ServiceResult.
- *
- * Don't know yet.
- */
 interface ResourceRouteHandlerBase<Result> {
   (context: RouteContext): Promise<Result>;
 }
 
-interface ResourceRouteHandlerWithMiddleware<Result> extends ResourceRouteHandlerBase<Result>{
+interface ResourceRouteHandlerWithMiddleware<Result> {
+  handler: ResourceRouteHandlerBase<Result>;
   middleware: unknown[];
 }
 
@@ -54,35 +43,42 @@ interface ResourceDefinition {
   routes: ResourceRouteDefinition[];
 }
 
+interface ResourceConfig {
+  prefix?: string;
+  middleware?: unknown[];
+}
+
 /** builder functions **/
 
 function data(
   path: string,
   handlers: Partial<Record<RouteMethod, ResourceRouteHandler<ServiceResult>>>,
-  prefix: string = '/api',
-  middleware?: unknown[]): ResourceRouteDefinition {
+  config: ResourceConfig = {}): ResourceRouteDefinition {
+
+  if (!config.prefix) {
+    config.prefix = '/api';
+  }
+
 
   return {
     __routeType: 'DATA',
     path: path,
     handlers: handlers,
-    prefix: prefix,
-    middleware: middleware
+    prefix: config.prefix,
+    middleware: config.middleware
   };
-
 }
 function view(
   path: string,
   handlers: Partial<Record<RouteMethod, ResourceRouteHandler<TemplateResult>>>,
-  prefix?: string,
-  middleware?: unknown[]): ResourceViewRouteDefinition {
+  config: ResourceConfig = {}): ResourceViewRouteDefinition {
 
   return {
     __routeType: 'VIEW',
     path: path,
     handlers: handlers,
-    prefix: prefix,
-    middleware: middleware
+    prefix: config.prefix,
+    middleware: config.middleware
   };
 }
 

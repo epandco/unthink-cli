@@ -41,7 +41,7 @@ export class ServiceResult<ValueModel = unknown, ErrorModel = ServiceError> {
     }
   }
 
-  public static ok<ValueModel, ErrorModel = ServiceError>(value: ValueModel): ServiceResult<ValueModel, ErrorModel> {
+  public static ok<ValueModel, ErrorModel = ServiceError>(value?: ValueModel): ServiceResult<ValueModel, ErrorModel> {
     return new ServiceResult<ValueModel, ErrorModel>(value);
   }
 

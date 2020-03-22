@@ -7,19 +7,67 @@ import {  ResourceDefinition, data, view } from './resource-definition';
  * Create a service in this case just a plain class with a method that returns a service result, which is the only
  * requirement.
  */
-class TestService {
-  async echo(inputStr: string): Promise<ServiceResult<number>> {
-    const input = parseInt(inputStr);
-    if (input > 200) {
-      return ServiceResult.error({
-        type: 'invalid range',
-        message: 'Value must be below 201'
-      });
-    } else if (input > 100) {
-      return ServiceResult.ok(input);
-    } else {
+
+interface User {
+  id: number;
+  name: string;
+}
+
+class UserService {
+  private nextId: number = 4;
+  private users: User[] = [
+    { id: 1, name: 'Usr 1' },
+    { id: 2, name: 'Usr 2' },
+    { id: 3, name: 'Usr 3' }
+  ]
+
+  async getUsers(): Promise<ServiceResult<User[]>> {
+    return ServiceResult.ok(this.users);
+  }
+
+  async getUser(id: number): Promise<ServiceResult<User>> {
+    const user = this.users.find(p => p.id === id);
+
+    if (!user) {
       return ServiceResult.notFound();
     }
+
+    return ServiceResult.ok(user);
+  }
+
+  async createUser(model: { name: string }): Promise<ServiceResult<number>> {
+    // update user
+    this.users.push({
+      id: this.nextId++,
+      name: model.name
+    });
+
+    return ServiceResult.ok(this.nextId);
+  }
+
+  async updateUser(id: number, model: { name: string } ): Promise<ServiceResult> {
+    const user = this.users.find(p => p.id === id);
+
+    if (!user) {
+      return ServiceResult.notFound();
+    }
+
+    // update user
+    user.name = model.name;
+
+    return ServiceResult.ok();
+  }
+
+  async deleteUser(id: number): Promise<ServiceResult> {
+    const userIndex = this.users.findIndex(p => p.id === id);
+
+    if (userIndex < 0) {
+      return ServiceResult.notFound();
+    }
+
+    this.users.splice(userIndex, 1);
+
+    return ServiceResult.ok();
   }
 }
 
@@ -32,22 +80,63 @@ const userDef: ResourceDefinition = {
     view(
       '/', // yields /users
       {
-        'GET': async (): Promise<TemplateResult> => {
+        'GET': async () => {
           return TemplateResult.view('users.html');
         },
       },
     ),
     data(
-      '/', // yields /api/users by default but can change via prefix parameter on data
+      '/', // yields /api/users by default but can change via prefix parameter config
+      { // ALL methods for this route are locked being data
+        'GET': async (): Promise<ServiceResult> => {
+          const us = new UserService();
+
+          return us.getUsers();
+        },
+        'POST': { // <-- alternate form if you have middleware for this method
+          handler: async (ctx): Promise<ServiceResult> => {
+            const us = new UserService();
+            return us.createUser(ctx.body as { name: string });
+          },
+          middleware: [
+            // middleware only on the post of this route
+          ]
+        }
+      },
       {
-        'GET': async (ctx) => {
-          const ts = new TestService();
+        // prefix: undefined, <-- to turn off prefix
+        // prefix: /auth <--- to set another prefix
+        middleware: [
+          // could add middleware at route level so in this case all methods in this route would get middleware
+          // even as the `/` route it's scoped to the data / view etc.
+        ]
+      }
+    ),
+    data(
+      '/:id', // would yield /api/users/:id
+      {
+        'GET': async (ctx): Promise<ServiceResult> => {
+          const us = new UserService();
 
           if (ctx.query) {
-            return ts.echo(ctx.query.num);
+            return us.getUser(parseInt(ctx.query.id));
           }
 
           throw new Error('Query was undefined');
+        },
+        'PUT': async (ctx): Promise<ServiceResult> => {
+          const us = new UserService();
+
+          if (!ctx.path) {
+            throw new Error('Query was undefined');
+          }
+
+          return us.updateUser(parseInt(ctx.path.id), ctx.body as { name: string });
+        },
+        'DELETE': async (ctx): Promise<ServiceResult> => {
+          const us = new UserService();
+
+          return us.deleteUser(parseInt(ctx.path?.id ?? ''));
         }
       }
     )
@@ -55,33 +144,3 @@ const userDef: ResourceDefinition = {
 };
 
 console.log(userDef);
-
-function print(resource: ResourceDefinition): void {
-  console.log(resource.basePath);
-  for (const k in resource.routes) {
-    const route = resource.routes[k];
-
-    for (const m in route) {
-      switch (m) {
-      case 'GET':
-        const rh = route.GET;
-
-        switch (rh.__routeType) {
-        case 'VIEW':
-          console.log('View Route');
-          console.lo;
-        }
-
-        break;
-      default:
-        throw Error('whoops!');
-        break;
-      }
-    }
-  }
-  break;
-}
-
-print(apiDef);
-print(tempDef);
-
