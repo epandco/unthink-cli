@@ -1,0 +1,32 @@
+<<%= props.tag %>>
+
+  <h1>{ state.pageTitle }</h1>
+
+  <script type="ts">
+    import {RiotComponentExport} from 'riot';
+
+    interface State {
+      pageTitle: string;
+    }
+
+    interface <%= props.name %> extends RiotComponentExport<never, State> {
+      state: State;
+    }
+
+    function build(): <%= props.name %> {
+      return {
+        state: {
+          pageTitle: '<%= props.name %>'
+        }
+      };
+    }
+
+    export default build;
+  </script>
+
+  <style type="scss">
+    :host {
+      display: block;
+    }
+  </style>
+</<%= props.tag %>>
