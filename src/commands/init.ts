@@ -36,6 +36,8 @@ const command: GluegunCommand = {
       return;
     }
 
+    const spinner = toolbox.print.spin(`Creating project at ${targetPath}`);
+
     await fsExtra.copy(baseStackDir, targetPath, {
       filter: (src: string) => {
         for (const path of ignorePath) {
@@ -66,7 +68,10 @@ const command: GluegunCommand = {
         private: true,
         description: '',
         repository: null,
-        homepage: null
+        homepage: null,
+        unthink: {
+          version: toolbox.meta.version()
+        }
       }
     );
 
@@ -82,7 +87,7 @@ const command: GluegunCommand = {
       props: { projectName },
     });
 
-    toolbox.print.info('Initialized project');
+    spinner.succeed('Initialized project');
   },
 };
 
