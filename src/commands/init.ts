@@ -1,4 +1,4 @@
-import { GluegunCommand, GluegunToolbox } from 'gluegun';
+import { GluegunCommand, GluegunPrint, GluegunToolbox } from 'gluegun';
 import * as fsExtra from 'fs-extra';
 import * as path from 'path';
 
@@ -12,14 +12,43 @@ const ignorePath = [
   /.*unthink-stack\/node_modules($|\/.*)/,
 ];
 
+const projectNamePattern = /^[a-z0-9-]+$/;
+
+function printProjectNameError(print: GluegunPrint, additionalMessage: string): void {
+  const projectNameRequirements = [
+    additionalMessage,
+    '',
+    'Project name must be lower case containing only letters (a-z), numbers (0-9) and dashes (-).',
+    'The name can contain the full path to the destination folder which will be the project name rules still apply.',
+    '',
+    'example: foo/bar/my-new-project.'
+  ];
+
+  for (const line of projectNameRequirements) {
+    print.error(line);
+  }
+}
+
 const command: GluegunCommand = {
   name: 'initialize',
   alias: ['i', 'init'],
   description: 'Start a new project',
 
   run: async (toolbox: GluegunToolbox): Promise<void> => {
-    const projectName = toolbox.parameters.first;
-    const targetPath = `${projectName}`;
+    const projectPath = toolbox.parameters.first;
+
+    if (!projectPath) {
+      printProjectNameError(toolbox.print, 'Project name not specified.');
+      return;
+    }
+
+    const projectName = path.basename(projectPath);
+    if (!projectNamePattern.test(projectName)) {
+      printProjectNameError(toolbox.print, `${projectName} is invalid.`);
+      return;
+    }
+
+    const targetPath = `${projectPath}`;
     const baseStackDir = path.join(__dirname, '../../unthink-stack');
 
     // If path exists bail even if it's just an empty directory
