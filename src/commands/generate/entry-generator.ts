@@ -2,18 +2,7 @@ import { GluegunToolbox, GluegunCommand } from 'gluegun';
 import { join } from 'path';
 import {pathExists, ensureDir} from 'fs-extra';
 
-// TODO: move this to extension
-function toPascalCase(input: string): string {
-  return input
-    .replace(new RegExp(/[-_]+/, 'g'), ' ')
-    .replace(new RegExp(/[^\w\s]/, 'g'), '')
-    .replace(
-      new RegExp(/\s+(.)(\w+)/, 'g'),
-      (_match: string, part1: string, part2: string) => `${part1.toUpperCase() + part2.toLowerCase()}`
-    )
-    .replace(new RegExp(/\s/, 'g'), '')
-    .replace(new RegExp(/\w/), s => s.toUpperCase());
-}
+
 
 const entryGenerator: GluegunCommand = {
   name: 'entry',
@@ -49,8 +38,7 @@ const entryGenerator: GluegunCommand = {
     // require W3 spec compliant name
     // e.g., "home-page" not "homepage"
     // e.g., "home-page" not "home-page.riot"
-    if (forcedLowerCase.split('-').length < 2 ||
-      /^[a-z][a-z-]+[a-z]+$/.test(forcedLowerCase) === false) {
+    if (!toolbox.formatters.isValidTagName(forcedLowerCase)) {
       toolbox.print.error(`"${toolbox.parameters.first}" is not a valid entry name.`);
       return;
     }
@@ -64,7 +52,7 @@ const entryGenerator: GluegunCommand = {
 
     const riotFileName = `${forcedLowerCase}.riot`;
     const entryFileName = `${forcedLowerCase}.ts`;
-    const pascalComponentName = toPascalCase(forcedLowerCase);
+    const pascalComponentName = toolbox.formatters.toPascalCase(forcedLowerCase);
 
     const spinner = toolbox.print.spin('Creating new entry.');
 

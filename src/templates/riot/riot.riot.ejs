@@ -1,0 +1,39 @@
+<<%= props.tag %>>
+
+  <!-- Template Code Goes Here -->
+
+<% if (props.script) { %>
+  <script type="ts">
+    import {RiotComponentExport} from 'riot';
+
+    interface Props {
+
+    }
+
+    interface State {
+
+    }
+
+    interface <%= props.name %> extends RiotComponentExport<Props, State> {
+      state: State;
+    }
+
+    function build(): <%= props.name %> {
+      return {
+        state: {
+
+        }
+      };
+    }
+
+    export default build;
+  </script>
+<% } %>
+<% if (props.style) { %>
+  <style type="scss">
+    :host {
+      display: block;
+    }
+  </style>
+<% } %>
+</<%= props.tag %>>
