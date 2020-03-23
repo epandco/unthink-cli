@@ -3,56 +3,40 @@ import * as fsExtra from 'fs-extra';
 import * as path from 'path';
 
 const ignorePath = [
-  'unthink-stack/lib/',
-  'unthink-stack/public/',
-  'unthink-stack/node_modules/',
+  // Exclude specific files
+  /.*unthink-stack\/\.env$/,
+
+  // Exclude lib, public, node_modules
+  /.*unthink-stack\/lib($|\/.*)/,
+  /.*unthink-stack\/public($|\/.*)/,
+  /.*unthink-stack\/node_modules($|\/.*)/,
 ];
 
-
 const command: GluegunCommand = {
-  name: 'init',
-  alias: ['i'],
+  name: 'initialize',
+  alias: ['i', 'init'],
   description: 'Start a new project',
 
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const projectName = toolbox.parameters.first;
-    const targetPath = `./${projectName}`;
+    const targetPath = `${projectName}`;
     const baseStackDir = path.join(__dirname, '../../unthink-stack');
 
-    try {
-      const existingFiles = await fsExtra.readdir(targetPath);
-      if (existingFiles.length > 0) {
-        toolbox.print.error(`${ path.resolve(targetPath) } is not empty.`);
-        return;
-      }
-    } catch (e) {
-      // lets just assume it's not a directory and move on.
-    }
-
-    try {
-      await fsExtra.ensureDir(targetPath);
-    } catch (e) {
-      toolbox.print.error(`${ path.resolve(targetPath) } is not empty.`);
+    // If path exists bail even if it's just an empty directory
+    if (await fsExtra.pathExists(targetPath)) {
+      toolbox.print.error(`${targetPath} already exists.`);
       return;
     }
 
+    // The filter is to prevent the build output and other
+    // initialized files like .env from appearing in the copied output
+    //
+    // This should never happen in production build but locally this
+    // could happen frequently as the unthink-stack dir will commonly
+    // be changed into and have npm install ran in it and npm run build
+    // to test the stack out.
     await fsExtra.copy(baseStackDir, targetPath, {
-      filter: (src: string) => {
-        for (const path of ignorePath) {
-          if (src.toLowerCase().includes(path.toLowerCase())) {
-            return false;
-          }
-        }
-
-        // This is temporary, but has to be handled differently
-        // than others because .eng.local and .env.prod match
-        // the includes functions above which is expected
-        if (src.toLowerCase().endsWith('unthink-stack/.env')) {
-          return false;
-        }
-
-        return true;
-      }
+      filter: (src: string) => ignorePath.every(path => path.test(src) === false)
     });
 
     await toolbox.package.loadAndUpdate(
