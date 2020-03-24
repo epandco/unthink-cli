@@ -50,7 +50,7 @@ const command: GluegunCommand = {
     }
 
     if (force) {
-      const response = toolbox.prompt.confirm(
+      const response = await toolbox.prompt.confirm(
         'Are you sure you want to force initialization? (overwrites files in destination)',
         false
       );
