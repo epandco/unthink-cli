@@ -1,4 +1,5 @@
 import * as dotenv from 'dotenv';
+import * as fs from 'fs';
 
 dotenv.config();
 
@@ -23,3 +24,6 @@ export const nunjucksFatalErrorTemplate = getEnvironmentValue('NUNJUCKS_TEMPLATE
 export const nunjucksUnauthorizedTemplate = getEnvironmentValue('NUNJUCKS_TEMPLATE_UNAUTHORIZED');
 
 export const contentBasePath: string = getEnvironmentValue('CONTENT_BASE_PATH');
+
+export const appName: string = JSON.parse(fs.readFileSync('./package.json').toString()).name;
+export const appVersion: string = JSON.parse(fs.readFileSync('./package.json').toString()).version;

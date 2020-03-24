@@ -14,14 +14,11 @@ import { NunjucksResourceRenderer } from 'nunjucks-resource-renderer';
 const app: express.Application = express();
 app.use(cookieParser());
 
-// open the package.json to get the version information
-const {version} = JSON.parse(fs.readFileSync('./package.json').toString());
-
 // Set up template rendering
 const nunjucksResourceRenderer = new NunjucksResourceRenderer(
   config.nunjucksBaseTemplatePath,
   {
-    'APP_VERSION': version,
+    'APP_VERSION': config.appVersion,
     'IS_PRODUCTION': config.isProduction
   },
   config.nunjucksNotFoundTemplate,
