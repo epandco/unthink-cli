@@ -36,6 +36,7 @@ const command: GluegunCommand = {
 
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const projectPath = toolbox.parameters.first;
+    const force: boolean = toolbox.parameters.options.force;
 
     if (!projectPath) {
       printProjectNameError(toolbox.print, 'Project name not specified.');
@@ -48,11 +49,23 @@ const command: GluegunCommand = {
       return;
     }
 
+    if (force) {
+      const response = toolbox.prompt.confirm(
+        'Are you sure you want to force initialization? (overwrites files in destination)',
+        false
+      );
+
+      if (!response) {
+        return;
+      }
+    }
+
     const targetPath = `${projectPath}`;
     const baseStackDir = path.join(__dirname, '../../unthink-stack');
 
-    // If path exists bail even if it's just an empty directory
-    if (await fsExtra.pathExists(targetPath)) {
+    // Unless the user is forcing creation
+    // bail even if the path exists even if it's just an empty directory
+    if (!force && await fsExtra.pathExists(targetPath)) {
       toolbox.print.error(`${targetPath} already exists.`);
       return;
     }
@@ -65,6 +78,8 @@ const command: GluegunCommand = {
     // be changed into and have npm install ran in it and npm run build
     // to test the stack out.
     await fsExtra.copy(baseStackDir, targetPath, {
+      overwrite: force,
+      errorOnExist: !force,
       filter: (src: string) => ignorePath.every(path => path.test(src) === false)
     });
 
@@ -86,7 +101,10 @@ const command: GluegunCommand = {
     // move existing readme to preserve it.
     await fsExtra.move(
       path.join(targetPath, 'README.md'),
-      path.join(targetPath, 'UNTHINK.md')
+      path.join(targetPath, 'UNTHINK.md'),
+      {
+        overwrite: force
+      }
     );
 
     await toolbox.template.generate({
