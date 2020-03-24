@@ -7,6 +7,7 @@ import * as config from './config/config';
 import {defaultContainer} from './config/di-container';
 import { registerResource } from 'express-register-resource';
 import { ResourceType, registerDefaultRenderer } from 'resource-decorator';
+import { VersionResource } from './resources/version-resource';
 import { HelloWorldResource } from './resources/hello-world-resource';
 import { NunjucksResourceRenderer } from 'nunjucks-resource-renderer';
 
@@ -31,6 +32,7 @@ const nunjucksResourceRenderer = new NunjucksResourceRenderer(
 registerDefaultRenderer(ResourceType.TEMPLATE, nunjucksResourceRenderer);
 
 // Register resources here
+registerResource(app, VersionResource, defaultContainer);
 registerResource(app, HelloWorldResource, defaultContainer);
 
 // For local development, the webpack dev server is used to serve up bundles
