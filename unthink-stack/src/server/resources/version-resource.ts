@@ -7,7 +7,7 @@ export class VersionResource extends ResourceBase {
 
   @template()
   async versionPage(): Promise<TemplateResponse | RedirectResponse> {
-    return new TemplateResponse('version.html', { 'APP_NAME': appName });
+    return new TemplateResponse('version.html', { 'appName': appName });
   }
 
 }

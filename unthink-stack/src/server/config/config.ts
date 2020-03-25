@@ -3,6 +3,8 @@ import * as fs from 'fs';
 
 dotenv.config();
 
+const packageJSON = JSON.parse(fs.readFileSync('./package.json').toString());
+
 function getEnvironmentValue(name: string): string {
   if (process.env[name]) {
     return process.env[name] as string;
@@ -25,5 +27,5 @@ export const nunjucksUnauthorizedTemplate = getEnvironmentValue('NUNJUCKS_TEMPLA
 
 export const contentBasePath: string = getEnvironmentValue('CONTENT_BASE_PATH');
 
-export const appName: string = JSON.parse(fs.readFileSync('./package.json').toString()).name;
-export const appVersion: string = JSON.parse(fs.readFileSync('./package.json').toString()).version;
+export const appName: string = packageJSON.name;
+export const appVersion: string = packageJSON.version;
