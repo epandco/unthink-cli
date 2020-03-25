@@ -100,5 +100,8 @@
       "lint-sass-fail"
     ],
     "silent": true
+  },
+  "unthink": {
+    "version": "1.0.0"
   }
 }

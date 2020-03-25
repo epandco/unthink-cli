@@ -70,6 +70,8 @@ const command: GluegunCommand = {
       return;
     }
 
+    const spinner = toolbox.print.spin(`Creating project at ${targetPath}`);
+
     // The filter is to prevent the build output and other
     // initialized files like .env from appearing in the copied output
     //
@@ -94,7 +96,10 @@ const command: GluegunCommand = {
         private: true,
         description: '',
         repository: null,
-        homepage: null
+        homepage: null,
+        unthink: {
+          version: toolbox.meta.version()
+        }
       }
     );
 
@@ -113,7 +118,7 @@ const command: GluegunCommand = {
       props: { projectName },
     });
 
-    toolbox.print.info('Initialized project');
+    spinner.succeed('Initialized project');
   },
 };
 
