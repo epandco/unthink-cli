@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <style>
+    body {
+      margin: 2rem;
+      font-family: SFMono-Regular, Menlo, monospace;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .version {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      font-size: 0.875rem;
+      color: #305580;
+      background: #EFF7FF;
+      border-radius: 0.25rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="version">{{ content.appName }} {{ APP_VERSION }}</div>
+</body>
+</html>
