@@ -1,6 +1,8 @@
-import { ServiceResult } from './service-result';
-import { TemplateResult } from './template-result';
-import {  ResourceDefinition, data, view } from './resource-definition';
+import { ServiceResult } from './unthink-foundation/service-result';
+import { TemplateResult } from './unthink-foundation/template-result';
+import {  ResourceDefinition, data, view } from './unthink-foundation/resource-definition';
+import { UnthinkExpressGenerator } from './unthink-foundation-express/unthink-express-generator';
+import { UnthinkGenerator } from './unthink-foundation/unthink-generator';
 
 
 /**
@@ -143,4 +145,7 @@ const userDef: ResourceDefinition = {
   ]
 };
 
-console.log(userDef);
+const gen = new UnthinkGenerator(new UnthinkExpressGenerator());
+
+gen.add(userDef);
+gen.generate();
