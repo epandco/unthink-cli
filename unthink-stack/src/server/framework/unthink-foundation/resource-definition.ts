@@ -72,13 +72,25 @@ export function data(
 
 export function view(
   path: string,
-  methods: ResourceMethodMap<TemplateResult>,
+  handler: string | ResourceRouteHandler<TemplateResult>,
   config: ResourceConfig = {}): ResourceViewRouteDefinition {
+
+  let methodMap: ResourceMethodMap<TemplateResult>;
+
+  if (typeof handler === 'string') {
+    methodMap = {
+      'get': async (): Promise<TemplateResult> => TemplateResult.view(handler)
+    };
+  } else {
+    methodMap = {
+      'get': handler
+    };
+  }
 
   return {
     __routeType: 'VIEW',
     path: path,
-    methods: methods,
+    methods: methodMap,
     prefix: config.prefix,
     middleware: config.middleware
   };

@@ -8,7 +8,7 @@ export class TemplateResult<ValueModel = unknown> {
 
   private readonly state: TemplateResultState;
 
-  public readonly templatePth?: string;
+  public readonly templatePath?: string;
   public readonly templateModel?: ValueModel;
   public readonly redirectUrl?: string;
 
@@ -21,7 +21,7 @@ export class TemplateResult<ValueModel = unknown> {
   }
 
   private constructor(state: TemplateResultState, template?: string, redirectUrl?: string, value?: ValueModel) {
-    this.templatePth = template;
+    this.templatePath = template;
     this.templateModel = value;
     this.redirectUrl = redirectUrl;
     this.state = state;

@@ -1,5 +1,5 @@
 import { ServiceResult } from './unthink-foundation/service-result';
-import {  ResourceDefinition, data } from './unthink-foundation/resource-definition';
+import { ResourceDefinition, data, view } from './unthink-foundation/resource-definition';
 import { UnthinkExpressGenerator } from './unthink-foundation-express/unthink-express-generator';
 import { UnthinkGenerator } from './unthink-foundation/unthink-generator';
 import * as express from 'express';
@@ -21,7 +21,7 @@ class UserService {
     { id: 1, name: 'Usr 1' },
     { id: 2, name: 'Usr 2' },
     { id: 3, name: 'Usr 3' }
-  ];
+];
 
   async getUsers(): Promise<ServiceResult<User[]>> {
     return ServiceResult.ok(this.users);
@@ -79,15 +79,7 @@ const userDef: ResourceDefinition = {
     // if we had middleware, this is optional just making an empty array to demonstrate it's here
   ],
   routes: [
-    /*
-    view(
-      '/', // yields /users
-      {
-        'GET': async () => {
-          return TemplateResult.view('users.html');
-        },
-      },
-    ),*/
+    view('/', 'users.html'),
     data(
       '/', // yields /api/users by default but can change via prefix parameter config
       { // ALL methods for this route are locked being data

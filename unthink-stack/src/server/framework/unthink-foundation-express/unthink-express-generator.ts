@@ -8,6 +8,12 @@ import {
 } from '../unthink-foundation/resource-definition';
 import { ServiceResult } from '../unthink-foundation/service-result';
 import { Application, Router, RequestHandler } from 'express';
+import { TemplateResult } from '../unthink-foundation/template-result';
+
+import * as config from '../../config/config';
+import * as nunjucks from 'nunjucks';
+
+nunjucks.configure(config.nunjucksBaseTemplatePath, { autoescape: true });
 
 interface GeneratedRoute {
   prefix: string;
@@ -24,20 +30,6 @@ function buildDataHandler(resourceRouteHandler: ResourceRouteHandlerBase<Service
     resp.contentType('application/json');
 
     try {
-      // TODO: Revisit to see if this is necessary
-      if (
-        // If we have a body
-        req.body &&
-        // and the content-type is not set or not application/json
-        (
-          !req.headers['content-type'] ||
-          (req.headers['content-type'] && req.headers['content-type'].toLowerCase() !== 'application/json')
-        )
-      ) {
-        resp.status(415).send();
-        return;
-      }
-
       const ctx: RouteContext = {
         query: req.query,
         params: req.params,
@@ -77,32 +69,64 @@ function buildDataHandler(resourceRouteHandler: ResourceRouteHandlerBase<Service
   };
 }
 
+function buildViewHandler(resourceRouteHandler: ResourceRouteHandlerBase<TemplateResult>): RequestHandler {
+  return async (req, resp, next): Promise<void> => {
+    resp.contentType('text/html');
+
+    try {
+      const ctx: RouteContext = {
+        query: req.query,
+        params: req.params,
+        body: req.body
+      };
+
+      const result = await resourceRouteHandler(ctx);
+
+      if (result.isTemplate) {
+        const body = nunjucks.render(result.templatePath as string, result.templateModel as object);
+        resp.status(200).send(body);
+        return;
+      } else if (result.isRedirect) {
+        resp.redirect(302, result.redirectUrl as string);
+        return;
+      }
+    } catch (error) {
+      next(error);
+    }
+  };
+}
+
 function generateRoute(resourceRouteDefinition: ResourceRouteDefinition): GeneratedRoute {
   const router = Router();
   const route = router.route(resourceRouteDefinition.path);
 
-  if (resourceRouteDefinition.__routeType === 'DATA') {
-    for (const method in resourceRouteDefinition.methods) {
-      const resourceHandlerObj = resourceRouteDefinition.methods[method as RouteMethod];
+  for (const method in resourceRouteDefinition.methods) {
+    const resourceHandlerObj = resourceRouteDefinition.methods[method as RouteMethod];
 
-      if (!resourceHandlerObj) {
-        throw new Error('Handler must be defined');
-      }
-
-      let resourceHandler: ResourceRouteHandlerBase<ServiceResult>;
-
-      if ('handler' in resourceHandlerObj) {
-        resourceHandler = resourceHandlerObj.handler;
-      } else {
-        resourceHandler = resourceHandlerObj;
-      }
-
-      const expressHandler = buildDataHandler(resourceHandler);
-
-      route[method as RouteMethod](expressHandler);
+    if (!resourceHandlerObj) {
+      throw new Error('Handler must be defined');
     }
-  } else {
-    throw new Error(`${resourceRouteDefinition.__routeType} is not supported yet`);
+
+    let resourceHandler: ResourceRouteHandlerBase;
+
+    if ('handler' in resourceHandlerObj) {
+      resourceHandler = resourceHandlerObj.handler;
+    } else {
+      resourceHandler = resourceHandlerObj;
+    }
+
+    let expressHandler: RequestHandler;
+
+    switch (resourceRouteDefinition.__routeType) {
+    case 'DATA':
+      expressHandler = buildDataHandler(resourceHandler as ResourceRouteHandlerBase<ServiceResult>);
+      break;
+    case 'VIEW':
+      expressHandler = buildViewHandler(resourceHandler as ResourceRouteHandlerBase<TemplateResult>);
+      break;
+    }
+
+    route[method as RouteMethod](expressHandler);
   }
 
   return {
