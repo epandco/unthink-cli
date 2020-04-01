@@ -39,6 +39,8 @@ export class ServiceResult<ValueModel = unknown, ErrorModel = ServiceError> {
       this.state = ServiceResultState.ERROR;
       this.error = error;
     }
+
+    console.log(value, error);
   }
 
   public static ok<ValueModel, ErrorModel = ServiceError>(value?: ValueModel): ServiceResult<ValueModel, ErrorModel> {

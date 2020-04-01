@@ -5,7 +5,7 @@ export type RouteMethod = 'get' | 'put' | 'post' | 'delete';
 
 export interface RouteContext {
   query?: Record<string, string>;
-  path?: Record<string, string>;
+  params?: Record<string, string>;
   body?: object;
 }
 

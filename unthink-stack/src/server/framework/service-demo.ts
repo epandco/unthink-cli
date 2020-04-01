@@ -1,8 +1,8 @@
 import { ServiceResult } from './unthink-foundation/service-result';
-import { TemplateResult } from './unthink-foundation/template-result';
-import {  ResourceDefinition, data, view } from './unthink-foundation/resource-definition';
+import {  ResourceDefinition, data } from './unthink-foundation/resource-definition';
 import { UnthinkExpressGenerator } from './unthink-foundation-express/unthink-express-generator';
 import { UnthinkGenerator } from './unthink-foundation/unthink-generator';
+import * as express from 'express';
 
 
 /**
@@ -21,7 +21,7 @@ class UserService {
     { id: 1, name: 'Usr 1' },
     { id: 2, name: 'Usr 2' },
     { id: 3, name: 'Usr 3' }
-  ]
+  ];
 
   async getUsers(): Promise<ServiceResult<User[]>> {
     return ServiceResult.ok(this.users);
@@ -79,6 +79,7 @@ const userDef: ResourceDefinition = {
     // if we had middleware, this is optional just making an empty array to demonstrate it's here
   ],
   routes: [
+    /*
     view(
       '/', // yields /users
       {
@@ -86,16 +87,16 @@ const userDef: ResourceDefinition = {
           return TemplateResult.view('users.html');
         },
       },
-    ),
+    ),*/
     data(
       '/', // yields /api/users by default but can change via prefix parameter config
       { // ALL methods for this route are locked being data
-        'GET': async (): Promise<ServiceResult> => {
+        'get': async (): Promise<ServiceResult> => {
           const us = new UserService();
 
           return us.getUsers();
         },
-        'POST': { // <-- alternate form if you have middleware for this method
+        'post': { // <-- alternate form if you have middleware for this method
           handler: async (ctx): Promise<ServiceResult> => {
             const us = new UserService();
             return us.createUser(ctx.body as { name: string });
@@ -117,35 +118,39 @@ const userDef: ResourceDefinition = {
     data(
       '/:id', // would yield /api/users/:id
       {
-        'GET': async (ctx): Promise<ServiceResult> => {
+        'get': async (ctx): Promise<ServiceResult> => {
           const us = new UserService();
 
-          if (ctx.query) {
-            return us.getUser(parseInt(ctx.query.id));
+          if (ctx.params) {
+            return us.getUser(parseInt(ctx.params.id));
           }
 
           throw new Error('Query was undefined');
         },
-        'PUT': async (ctx): Promise<ServiceResult> => {
+        'put': async (ctx): Promise<ServiceResult> => {
           const us = new UserService();
 
-          if (!ctx.path) {
+          if (!ctx.params) {
             throw new Error('Query was undefined');
           }
 
-          return us.updateUser(parseInt(ctx.path.id), ctx.body as { name: string });
+          return us.updateUser(parseInt(ctx.params.id), ctx.body as { name: string });
         },
-        'DELETE': async (ctx): Promise<ServiceResult> => {
+        'delete': async (ctx): Promise<ServiceResult> => {
           const us = new UserService();
 
-          return us.deleteUser(parseInt(ctx.path?.id ?? ''));
+          return us.deleteUser(parseInt(ctx.params?.id ?? ''));
         }
       }
     )
   ]
 };
 
-const gen = new UnthinkGenerator(new UnthinkExpressGenerator());
 
+const app = express();
+
+const gen = new UnthinkGenerator(new UnthinkExpressGenerator(app));
 gen.add(userDef);
 gen.generate();
+
+app.listen(3001);
