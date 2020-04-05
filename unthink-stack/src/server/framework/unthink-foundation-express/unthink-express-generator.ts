@@ -5,7 +5,7 @@ import * as path from 'path';
 import { UnthinkGeneratorBackend } from '../unthink-foundation/unthink-generator-backend';
 import { ServiceResult } from '../unthink-foundation/service-result';
 import { TemplateResult } from '../unthink-foundation/template-result';
-import { UnthinkExpressMiddlewareError } from './UnthinkExprsesMiddlewareError';
+import { UnthinkExpressMiddlewareError } from './unthink-express-middleware-error';
 
 import {
   ResourceDefinition,
