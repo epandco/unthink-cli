@@ -40,7 +40,8 @@ export interface ResourceViewRouteDefinition extends ResourceRouteDefinitionBase
 export type ResourceRouteDefinition = ResourceDataRouteDefinition | ResourceViewRouteDefinition;
 
 export interface ResourceDefinition {
-  basePath: string;
+  name: string;
+  basePath?: string;
   middleware?: unknown[];
   routes: ResourceRouteDefinition[];
 }
