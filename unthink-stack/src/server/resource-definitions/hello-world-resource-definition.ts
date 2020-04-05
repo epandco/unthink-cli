@@ -1,8 +1,7 @@
-import { data, ResourceDefinition, view } from '../framework/unthink-foundation/resource-definition';
+import { data, resource,  view } from '../framework/unthink-foundation/resource-definition';
 import { ServiceResult } from '../framework/unthink-foundation/service-result';
 
-
-const helloWorldDefinition: ResourceDefinition = {
+export default resource({
   name: 'Hello World resource',
   routes: [
     view('/', 'hello-world.html'),
@@ -10,6 +9,4 @@ const helloWorldDefinition: ResourceDefinition = {
       'get': async () => ServiceResult.ok({ message: 'Hello, World'})
     })
   ]
-};
-
-export default helloWorldDefinition;
+});

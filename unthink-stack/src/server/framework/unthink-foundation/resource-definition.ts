@@ -97,3 +97,7 @@ export function view(
   };
 }
 
+export function resource(resourceDefinition: ResourceDefinition): ResourceDefinition {
+  return resourceDefinition;
+}
+
