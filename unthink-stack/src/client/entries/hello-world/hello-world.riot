@@ -21,14 +21,14 @@
 
         onBeforeMount(): void {
           this.fetchMessage()
-          .then((message: string) => {
-            this.update({
-              message: message
+            .then((message: string) => {
+              this.update({
+                message: message
+              });
+            })
+            .catch((err: Error) => {
+              console.error(err);
             });
-          })
-          .catch((err: Error) => {
-            console.error(err);
-          });
         },
 
         async fetchMessage(): Promise<string> {
