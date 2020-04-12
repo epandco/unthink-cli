@@ -129,12 +129,16 @@ function buildViewHandler(resourceRouteHandler: ResourceRouteHandlerBase<Templat
   };
 }
 
-function generateRoute(resourceRouteDefinition: ResourceRouteDefinition): GeneratedRoute {
+function generateRoute(resourceRouteDefinition: ResourceRouteDefinition<RequestHandler>): GeneratedRoute {
   const router = Router();
   const route = router.route(resourceRouteDefinition.path);
 
   if (resourceRouteDefinition.__routeType === 'DATA') {
     router.use(dataErrorHandler);
+  }
+
+  if (resourceRouteDefinition.middleware && resourceRouteDefinition.middleware.length > 0) {
+    route.all(...resourceRouteDefinition.middleware);
   }
 
   for (const method in resourceRouteDefinition.methods) {
@@ -146,24 +150,28 @@ function generateRoute(resourceRouteDefinition: ResourceRouteDefinition): Genera
 
     let resourceHandler: ResourceRouteHandlerBase;
 
+    const handlers: RequestHandler[] = [];
     if ('handler' in resourceHandlerObj) {
       resourceHandler = resourceHandlerObj.handler;
+      handlers.push(...resourceHandlerObj.middleware);
     } else {
       resourceHandler = resourceHandlerObj;
     }
 
-    let expressHandler: RequestHandler;
-
     switch (resourceRouteDefinition.__routeType) {
     case 'DATA':
-      expressHandler = buildDataHandler(resourceHandler as ResourceRouteHandlerBase<ServiceResult>);
+      handlers.push(
+        buildDataHandler(resourceHandler as ResourceRouteHandlerBase<ServiceResult>)
+      );
       break;
     case 'VIEW':
-      expressHandler = buildViewHandler(resourceHandler as ResourceRouteHandlerBase<TemplateResult>);
+      handlers.push(
+        buildViewHandler(resourceHandler as ResourceRouteHandlerBase<TemplateResult>)
+      );
       break;
     }
 
-    route[method as RouteMethod](expressHandler);
+    route[method as RouteMethod](...handlers);
   }
 
 
@@ -173,7 +181,7 @@ function generateRoute(resourceRouteDefinition: ResourceRouteDefinition): Genera
   };
 }
 
-function generateDefinition(resourceDefinition: ResourceDefinition): GeneratedDefinition[] {
+function generateDefinition(resourceDefinition: ResourceDefinition<RequestHandler>): GeneratedDefinition[] {
   const mapPrefixedRoutes = new Map<string, GeneratedDefinition>();
 
   for (const routeDef of resourceDefinition.routes) {
@@ -194,6 +202,10 @@ function generateDefinition(resourceDefinition: ResourceDefinition): GeneratedDe
         router: Router()
       };
 
+      if (resourceDefinition.middleware && resourceDefinition.middleware.length > 0) {
+        generatedDefinition.router.use(...resourceDefinition.middleware);
+      }
+
       mapPrefixedRoutes.set(prefix, generatedDefinition);
     }
 
@@ -203,14 +215,14 @@ function generateDefinition(resourceDefinition: ResourceDefinition): GeneratedDe
   return Array.from(mapPrefixedRoutes.values());
 }
 
-export class UnthinkExpressGenerator implements UnthinkGeneratorBackend {
+export class UnthinkExpressGenerator implements UnthinkGeneratorBackend<RequestHandler> {
   private app: Application;
 
   constructor(app: Application) {
     this.app = app;
   }
 
-  generate(resourceDefinitions: ResourceDefinition[]): void {
+  generate(resourceDefinitions: ResourceDefinition<RequestHandler>[]): void {
     const generatedDefinitions = resourceDefinitions.flatMap(generateDefinition);
 
     this.app.use(json());

@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "env-check": "node ./scripts/env-check.js",
     "start": "npm run env-check &&  npm run build && node ./scripts/dev.js",
-    "serve": "./node_modules/.bin/nodemon --config ./scripts/nodemon.server.json ./lib/server/server.js",
+    "serve": "./node_modules/.bin/nodemon --inspect --config ./scripts/nodemon.server.json ./lib/server/server.js",
     "watch-client": "./node_modules/.bin/nodemon --config ./scripts/nodemon.client.json --exec \"./node_modules/.bin/webpack-dev-server --config ./scripts/webpack.dev.js\"",
     "watch-server": "./node_modules/.bin/tsc -w --project ./src/server/tsconfig.json",
     "watch-content": "./node_modules/.bin/onchange \"src/content/**/*\" -- npm run build-content",

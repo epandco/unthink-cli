@@ -13,50 +13,50 @@ export interface ResourceRouteHandlerBase<Result = unknown> {
   (context: RouteContext): Promise<Result>;
 }
 
-export interface ResourceRouteHandlerWithMiddleware<Result> {
+export interface ResourceRouteHandlerWithMiddleware<Result, ResourceMiddleware> {
   handler: ResourceRouteHandlerBase<Result>;
-  middleware: unknown[];
+  middleware: ResourceMiddleware[];
 }
 
-export type ResourceRouteHandler<Result> = ResourceRouteHandlerBase<Result> | ResourceRouteHandlerWithMiddleware<Result>
+export type ResourceRouteHandler<Result, ResourceMiddleware> = ResourceRouteHandlerBase<Result> | ResourceRouteHandlerWithMiddleware<Result, ResourceMiddleware>
 
-type ResourceMethodMap<Result> = Partial<Record<RouteMethod, ResourceRouteHandler<Result>>>;
+type ResourceMethodMap<Result, ResourceMiddleware> = Partial<Record<RouteMethod, ResourceRouteHandler<Result, ResourceMiddleware>>>;
 
-export interface ResourceRouteDefinitionBase<Result> {
+export interface ResourceRouteDefinitionBase<Result, ResourceMiddleware> {
   path: string;
   prefix?: string;
-  middleware?: unknown[];
-  methods: ResourceMethodMap<Result>;
+  middleware?: ResourceMiddleware[];
+  methods: ResourceMethodMap<Result, ResourceMiddleware>;
 }
 
-export interface ResourceDataRouteDefinition extends ResourceRouteDefinitionBase<ServiceResult> {
+export interface ResourceDataRouteDefinition<ResourceMiddleware> extends ResourceRouteDefinitionBase<ServiceResult, ResourceMiddleware> {
   __routeType: 'DATA';
 }
 
-export interface ResourceViewRouteDefinition extends ResourceRouteDefinitionBase<TemplateResult> {
+export interface ResourceViewRouteDefinition<ResourceMiddleware> extends ResourceRouteDefinitionBase<TemplateResult, ResourceMiddleware> {
   __routeType: 'VIEW';
 }
 
-export type ResourceRouteDefinition = ResourceDataRouteDefinition | ResourceViewRouteDefinition;
+export type ResourceRouteDefinition<ResourceMiddleware> = ResourceDataRouteDefinition<ResourceMiddleware> | ResourceViewRouteDefinition<ResourceMiddleware>;
 
-export interface ResourceDefinition {
+export interface ResourceDefinition<ResourceMiddleware> {
   name: string;
   basePath?: string;
-  middleware?: unknown[];
-  routes: ResourceRouteDefinition[];
+  middleware?: ResourceMiddleware[];
+  routes: ResourceRouteDefinition<ResourceMiddleware>[];
 }
 
-interface ResourceConfig {
+interface ResourceConfig<ResourceMiddleware> {
   prefix?: string;
-  middleware?: unknown[];
+  middleware?: ResourceMiddleware[];
 }
 
 /** builder functions **/
 
-export function data(
+export function data<ResourceMiddleware>(
   path: string,
-  methods: ResourceMethodMap<ServiceResult>,
-  config: ResourceConfig = {}): ResourceRouteDefinition {
+  methods: ResourceMethodMap<ServiceResult, ResourceMiddleware>,
+  config: ResourceConfig<ResourceMiddleware> = {}): ResourceRouteDefinition<ResourceMiddleware> {
 
   if (!config.prefix) {
     config.prefix = '/api';
@@ -71,12 +71,12 @@ export function data(
   };
 }
 
-export function view(
+export function view<ResourceMiddleware>(
   path: string,
-  handler: string | ResourceRouteHandler<TemplateResult>,
-  config: ResourceConfig = {}): ResourceViewRouteDefinition {
+  handler: string | ResourceRouteHandler<TemplateResult, ResourceMiddleware>,
+  config: ResourceConfig<ResourceMiddleware> = {}): ResourceViewRouteDefinition<ResourceMiddleware> {
 
-  let methodMap: ResourceMethodMap<TemplateResult>;
+  let methodMap: ResourceMethodMap<TemplateResult, ResourceMiddleware>;
 
   if (typeof handler === 'string') {
     methodMap = {
@@ -95,9 +95,5 @@ export function view(
     prefix: config.prefix,
     middleware: config.middleware
   };
-}
-
-export function resource(resourceDefinition: ResourceDefinition): ResourceDefinition {
-  return resourceDefinition;
 }
 

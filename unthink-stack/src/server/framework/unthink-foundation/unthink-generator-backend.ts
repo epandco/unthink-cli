@@ -1,5 +1,5 @@
 import { ResourceDefinition } from './resource-definition';
 
-export interface UnthinkGeneratorBackend {
-  generate(resourceDefinitions: ResourceDefinition[]): void;
+export interface UnthinkGeneratorBackend<ResourceMiddleware> {
+  generate(resourceDefinitions: ResourceDefinition<ResourceMiddleware>[]): void;
 }
