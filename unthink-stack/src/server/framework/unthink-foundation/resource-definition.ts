@@ -1,5 +1,6 @@
-import { ServiceResult } from './service-result';
-import { TemplateResult } from './template-result';
+import { UnthinkDataResult } from './unthink-data-result';
+import { UnthinkViewResult } from './unthink-view-result';
+
 
 export type RouteMethod = 'get' | 'put' | 'post' | 'delete';
 
@@ -29,11 +30,11 @@ export interface ResourceRouteDefinitionBase<Result, ResourceMiddleware> {
   methods: ResourceMethodMap<Result, ResourceMiddleware>;
 }
 
-export interface ResourceDataRouteDefinition<ResourceMiddleware> extends ResourceRouteDefinitionBase<ServiceResult, ResourceMiddleware> {
+export interface ResourceDataRouteDefinition<ResourceMiddleware> extends ResourceRouteDefinitionBase<UnthinkDataResult, ResourceMiddleware> {
   __routeType: 'DATA';
 }
 
-export interface ResourceViewRouteDefinition<ResourceMiddleware> extends ResourceRouteDefinitionBase<TemplateResult, ResourceMiddleware> {
+export interface ResourceViewRouteDefinition<ResourceMiddleware> extends ResourceRouteDefinitionBase<UnthinkViewResult, ResourceMiddleware> {
   __routeType: 'VIEW';
 }
 
@@ -55,7 +56,7 @@ interface ResourceConfig<ResourceMiddleware> {
 
 export function data<ResourceMiddleware>(
   path: string,
-  methods: ResourceMethodMap<ServiceResult, ResourceMiddleware>,
+  methods: ResourceMethodMap<UnthinkDataResult, ResourceMiddleware>,
   config: ResourceConfig<ResourceMiddleware> = {}): ResourceRouteDefinition<ResourceMiddleware> {
 
   if (!config.prefix) {
@@ -73,14 +74,14 @@ export function data<ResourceMiddleware>(
 
 export function view<ResourceMiddleware>(
   path: string,
-  handler: string | ResourceRouteHandler<TemplateResult, ResourceMiddleware>,
+  handler: string | ResourceRouteHandler<UnthinkViewResult, ResourceMiddleware>,
   config: ResourceConfig<ResourceMiddleware> = {}): ResourceViewRouteDefinition<ResourceMiddleware> {
 
-  let methodMap: ResourceMethodMap<TemplateResult, ResourceMiddleware>;
+  let methodMap: ResourceMethodMap<UnthinkViewResult, ResourceMiddleware>;
 
   if (typeof handler === 'string') {
     methodMap = {
-      'get': async (): Promise<TemplateResult> => TemplateResult.view(handler)
+      'get': async (): Promise<UnthinkViewResult> => UnthinkViewResult.ok(handler)
     };
   } else {
     methodMap = {

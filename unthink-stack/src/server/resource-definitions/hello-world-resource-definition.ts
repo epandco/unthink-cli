@@ -1,7 +1,7 @@
 import { data, view } from '../framework/unthink-foundation/resource-definition';
-import { ServiceResult } from '../framework/unthink-foundation/service-result';
 import { expressResource } from '../framework/unthink-foundation-express/express-resource';
-import { TemplateResult } from '../framework/unthink-foundation/template-result';
+import { UnthinkDataResult } from '../framework/unthink-foundation/unthink-data-result';
+import { UnthinkViewResult } from '../framework/unthink-foundation/unthink-view-result';
 
 // Gets incremented each request
 let counter = 0;
@@ -20,7 +20,7 @@ export default expressResource({
   ],
   routes: [
     view('/', {
-      handler: async () => TemplateResult.view('hello-world.html'),
+      handler: async () => UnthinkViewResult.ok('hello-world.html'),
       middleware: [
         async (_req, resp, next): Promise<void> => {
           console.log('view method level', resp.locals.counter);
@@ -37,7 +37,7 @@ export default expressResource({
     }),
     data( '/message', {
       'get': {
-        handler: async (): Promise<ServiceResult> => ServiceResult.ok({ message: 'Hello, World'}),
+        handler: async (): Promise<UnthinkDataResult> => UnthinkDataResult.ok({ message: 'hello, world!' }),
         middleware: [
           async (_req, resp, next): Promise<void> => {
             console.log('data method level - first', resp.locals.counter);
