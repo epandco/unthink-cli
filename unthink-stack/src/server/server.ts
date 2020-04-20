@@ -4,21 +4,13 @@ import * as https from 'https';
 import * as fs from 'fs';
 import * as cookieParser from 'cookie-parser';
 import * as config from './config/config';
-import VersionResource from './resources/version-resource';
-import HelloWorldResource from './resources/hello-world-resource';
-import { UnthinkExpressGenerator } from '@epandco/unthink-foundation-express';
-import { UnthinkGenerator } from '@epandco/unthink-foundation';
-import { renderTemplateWithContextAdded } from './nunjucks-renderer';
+import { init } from './unthink-foundation-init';
 
 const app: express.Application = express();
 app.use(cookieParser());
 
-const expressGen = new UnthinkExpressGenerator(app, renderTemplateWithContextAdded);
-const unthinkGen = new UnthinkGenerator(expressGen);
-
-unthinkGen.add(VersionResource);
-unthinkGen.add(HelloWorldResource);
-unthinkGen.generate();
+/** Initialize the unthink foundation layer **/
+init(app);
 
 // For local development, the webpack dev server is used to serve up bundles
 if (!config.isProduction) {
