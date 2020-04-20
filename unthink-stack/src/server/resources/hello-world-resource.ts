@@ -3,7 +3,7 @@ import { data, DataResult, view } from '@epandco/unthink-foundation';
 
 
 export default expressResource({
-  name: 'Root definition',
+  name: 'Root',
   routes: [
     view('/', 'hello-world.html'),
     data('/message', {
