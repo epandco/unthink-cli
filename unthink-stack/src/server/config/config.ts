@@ -26,6 +26,7 @@ export const nunjucksFatalErrorTemplate = getEnvironmentValue('NUNJUCKS_TEMPLATE
 export const nunjucksUnauthorizedTemplate = getEnvironmentValue('NUNJUCKS_TEMPLATE_UNAUTHORIZED');
 
 export const contentBasePath: string = getEnvironmentValue('CONTENT_BASE_PATH');
+export const logLevel: string = getEnvironmentValue('LOG_LEVEL');
 
 export const appName: string = packageJSON.name;
 export const appVersion: string = packageJSON.version;

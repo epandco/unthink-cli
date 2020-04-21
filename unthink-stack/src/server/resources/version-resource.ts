@@ -6,6 +6,8 @@ export default expressResource({
   name: 'Version',
   basePath: '/unthink/version',
   routes: [
-    view('/', async () => ViewResult.ok('version.html', { appName: appName}))
+    view('/', async () => ViewResult.ok('version.html', {
+      value: { appName: appName}
+    }))
   ]
 });

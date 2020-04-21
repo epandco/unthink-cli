@@ -12,7 +12,11 @@ import resourceDefinitions from './resource-definitions';
 const app: express.Application = express();
 app.use(cookieParser());
 
-const expressGen = new UnthinkExpressGenerator(app, renderTemplateWithContextAdded);
+const expressGen = new UnthinkExpressGenerator(
+  app,
+  renderTemplateWithContextAdded,
+  config.logLevel
+);
 const unthinkGen = new UnthinkGenerator(expressGen);
 
 resourceDefinitions.forEach(rd => unthinkGen.add(rd));

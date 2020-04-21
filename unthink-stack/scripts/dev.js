@@ -2,7 +2,7 @@ const concurrently = require('concurrently');
 
 concurrently([
   {
-    command: 'npm:serve',
+    command: 'npm:serve | ./node_modules/.bin/pino-pretty',
     name: 'server',
     prefixColor: 'blue.bold'
   },
