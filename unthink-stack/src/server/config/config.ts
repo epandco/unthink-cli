@@ -15,6 +15,7 @@ function getEnvironmentValue(name: string): string {
 
 export const mongoDbUrl: string = getEnvironmentValue('MONGO_DB_URL');
 export const mongoDbDefaultDatabase = getEnvironmentValue('MONGO_DB_DEFAULT_DB');
+export const mongoDbDefaultCollection = getEnvironmentValue('MONGO_DB_DEFAULT_COLLECTION');
 export const expressServerPort: number = parseInt(getEnvironmentValue('EXPRESS_SERVER_PORT'));
 export const webpackDevServerPort: number | null = process.env.hasOwnProperty('WEBPACK_DEV_PORT') ? parseInt(process.env.WEBPACK_DEV_PORT as string) : null;
 export const isProduction: boolean = !!(process.env.hasOwnProperty('NODE_ENV') && process.env.NODE_ENV && process.env.NODE_ENV.toLowerCase() === 'production');
