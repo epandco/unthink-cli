@@ -23,7 +23,7 @@
     "build": "npm run build-server && npm run build-content && npm run build-public",
     "build-server": "./node_modules/.bin/tsc --project ./src/server/tsconfig.json",
     "build-client": "./node_modules/.bin/webpack --config ./scripts/webpack.prod.js",
-    "build-content": "./node_modules/.bin/copyfiles -u 1 \"src/content/templates/**/*\" ./lib",
+    "build-content": "./node_modules/.bin/copyfiles -u 1 \"src/content/**/*\" ./lib",
     "build-sass": "./node_modules/.bin/sass src/client/sass/main.scss public/css/main.css --style=compressed",
     "build-public": "./node_modules/.bin/copyfiles -u 3 \"./src/client/public/**/*\" ./public"
   },
