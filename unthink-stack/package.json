@@ -86,7 +86,7 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "mongodb": "^3.5.7",
-    "nunjucks": "^3.2.1",
+    "nunjucks": "^3.2.1"
   },
   "pre-commit": {
     "run": [
