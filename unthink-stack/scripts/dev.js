@@ -2,7 +2,7 @@ const concurrently = require('concurrently');
 
 concurrently([
   {
-    command: 'npm:serve | ./node_modules/.bin/pino-pretty',
+    command: 'npm:serve | ./node_modules/.bin/pino-pretty --ignore req,res,responseTime,unthinkHandlerError,err --messageFormat="{msg} {unthinkHandlerError}"',
     name: 'server',
     prefixColor: 'blue.bold'
   },
