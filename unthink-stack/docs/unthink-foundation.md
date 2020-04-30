@@ -64,7 +64,42 @@ This decision to hide the underlying request was intentional. This abstraction o
 `web framework` like express allows the removal of some boiler plate while enforcing certain a specific style for things
 like API calls.
 
-### View Routes
+### Route handlers
+All route handlers have the same general signature as seen below in the examples
+only differing by the return type based on the kind of route. 
+
+```typescript
+// The two signatures
+(context: RouteContext): Promise<DataResult> // used in data routes
+(context: RouteContext): Promise<ViewResult> // for view routes
+
+// Examples
+
+// The context can be omitted if not being used
+view('/todo', async () => ViewResult.ok('todo.html'))
+data('/todo', { get: async () => DataResult.Ok({ value: todos }) }) 
+
+// A trivial example with context being used. More detailed examples below
+view('/todo', async (ctx) => ViewResult.ok('todo-item.html', { value: { todoId: ctx.query?.id } }))
+``` 
+
+Please note the Promise if the return type and the use of async in the examples.
+
+### Route Context
+Route handlers have only one argument and that is a RouteContext object that is passed in on every call. This object
+contains all the needed context from the incoming request and below is a quick overview of the properties.
+
+| Property | description |
+|----------|---------|
+| query | Contains the query parameters.  |
+| params | Houses the path parameters. |
+| body | If the request has a body it will be on this property. Typically this is a JSON object being sent by the client. |
+| local | Directly mapped to the `response.locals` from the express Response object. Used to pass data between middleware and route handlers. |
+| logger | A Pino logger instance. This SHOULD BE used for ALL logging for ANY HTTP requests with no exception. Do not use console.log in route handlers or code called within a route handlers. |
+| headers | Access to the incoming headers. |
+| cookies | The incoming cookies. |
+
+## View Routes
 A view route is defined by using the `view` function provided by the unthink-foundation package and has the
 following properties:
 
@@ -121,7 +156,7 @@ _Note: All functions below render the supplied template and pass the optional va
 
 Each of these functions also allow you to set headers and cookies.
 
-## Data Route
+## Data Routes
 A data routes defined by the `data` function provided by the unthink-stack package. This route type is for building
 JSON API and has the following properties:
 
@@ -209,34 +244,4 @@ To find out more about the signatures reference them [here](https://github.com/e
 
 All functions can set headers and cookies similar to ViewResult. 
 
-### Route handlers
-All route handlers have the same general signature as seen above in the examples
-only differing by the return type based on the kind of route. 
-
-```
-// The two signatures
-(context: RouteContext): Promise<DataResult> // used in data routes
-(context: RouteContext): Promise<ViewResult> // for view routes
-
-// Examples in context from the above examples
-view('/todo', async (ctx) => ViewResult.ok('todo.html')
-
-data('/todo', { get: async (ctx) => DataResult.Ok({ value: todos }) }) 
-``` 
-
-Please note the Promise if the return type and the use of async in the examples.
-
-### Route Context
-Route handlers have only one argument and that is a RouteContext object that is passed in on every call. This object
-contains all the needed context from the incoming request and below is a quick overview of the properties.
-
-| Property | description |
-|----------|---------|
-| query | Contains the query parameters.  |
-| params | Houses the path parameters. |
-| body | If the request has a body it will be on this property. Typically this is a JSON object being sent by the client. |
-| local | Directly mapped to the `response.locals` from the express Response object. Used to pass data between middleware and route handlers. |
-| logger | A Pino logger instance. This SHOULD BE used for ALL logging for ANY HTTP requests with no exception. Do not use console.log in route handlers or code called within a route handlers. |
-| headers | Access to the incoming headers |
-| cookies | The incoming cookies |
 
