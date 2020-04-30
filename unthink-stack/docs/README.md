@@ -15,7 +15,19 @@ shared knowledge for both.
 - Linting for full stack via [ESLint](https://eslint.org/) and [Stylelint](https://stylelint.io/)
 - [Environment-based configuration](https://12factor.net/config)
 
+## Requirements
+
+- Latest LTS version of [Node](https://nodejs.org/en/about/releases/).
+- Docker (for Mongodb local development)
+  - [For Windows](https://download.docker.com/win/stable/Docker%20for%20Windows%20Installer.exe)
+  - [For macOS](https://download.docker.com/mac/stable/Docker.dmg)
+- SSL Cert: this stack uses HTTPS and requires having an SSL cert for `localhost`.
+
+Other project dependencies will be managed by `npm`.
+
 ## Documentation
 
 - [Getting Started Quickly by Using the CLI](../../README.md)
 - [Server Fundamentals](./unthink-foundation.md)
+- [Client Workflow](./client-workflow.md)
+
