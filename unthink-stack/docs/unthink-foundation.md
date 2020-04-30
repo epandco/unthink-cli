@@ -234,7 +234,7 @@ contains all the needed context from the incoming request and below is a quick o
 |----------|---------|
 | query | Contains the query parameters.  |
 | params | Houses the path parameters. |
-| body | If request had a body, which typically a JSON object it will be on this property. |
+| body | If the request has a body it will be on this property. Typically this is a JSON object being sent by the client. |
 | local | Directly mapped to the `response.locals` from the express Response object. Used to pass data between middleware and route handlers. |
 | logger | A Pino logger instance. This SHOULD BE used for ALL logging for ANY HTTP requests with no exception. Do not use console.log in route handlers or code called within a route handlers. |
 | headers | Access to the incoming headers |
