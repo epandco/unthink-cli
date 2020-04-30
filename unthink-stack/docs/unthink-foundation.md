@@ -255,8 +255,7 @@ sections are functions that each request will be passed to in order one after an
 ### Levels of middleware
 1. Resource level: These are defined at the toplevel of the resource.
 2. Route level: Each route `view` or `data` can be provided middleware via options passed in as the last argument.
-3. Method level: For `view` routes there is an alternate form for the handler argument that takes a handler and middleware.
-   Data routes also have an alternate form on each HTTP verb handler (shown below). 
+3. Method level: Only applicable to data routes which have an alternate form on each HTTP verb handler (shown below). 
    
 ### Execution order
 Middleware defined on a resource is executed in specific predictable pattern in this order:
