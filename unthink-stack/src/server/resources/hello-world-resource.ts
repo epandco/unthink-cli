@@ -5,7 +5,7 @@ import { data, DataResult, view } from '@epandco/unthink-foundation';
 export default expressResource({
   name: 'Root',
   routes: [
-    view('/', 'hello-world.html'),
+    view('/', 'hello-world.njk'),
     data('/message', {
       'get': async () => DataResult.ok({ message: 'Hello, World!'})
     })
