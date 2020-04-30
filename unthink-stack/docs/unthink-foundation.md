@@ -274,6 +274,7 @@ exceptions don't make it back the client and are logged properly. It also is cal
 For the route handler this behavior is automatically wired up, HOWEVER for raw middleware it is the responsibility of the 
 DEVELOPER to ensure errors are propagated correctly. This will be called out in the examples below.
 
+
 ### Express middleware
 Middleware is strongly typed to the underlying web framework. This done via the use of generics and the reason
 for the `expressResource` function at the start of this document. In the future another underlying
@@ -318,6 +319,11 @@ function validateToken(req: Request, resp: Response, next: NextFunction): void {
   next(); 
 }
 ```
+
+`next(DataResult.unauthorized());` within express will skip all the functions after this middleware in the pipeline
+and go directly to the error handler. As stated above, for normal route handlers (which turn into express middleware)
+this is done automatically when it returns an error like `DataResult.unauthorized();` for example. However, for raw
+middleware like the example above it is CRITICAL to call `next` properly. 
 
 ### Putting it all together
 The example below a contrived example demonstrating the various levels of middleware and how the data is passed through.
