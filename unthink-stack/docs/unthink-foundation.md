@@ -61,7 +61,7 @@ DOES NOT have access to the underlying request from express. The unthink-foundat
 object to the route each time it is called. 
 
 This decision to hide the underlying request was intentional. This abstraction over a general purpose
-`web framework` like express allows the removal of some boiler plate while enforcing certain a specific style for things
+`web framework` like express allows the removal of some boiler plate while enforcing specific style for things
 like API calls.
 
 ### Route handlers
@@ -83,7 +83,7 @@ data('/todo', { get: async () => DataResult.Ok({ value: todos }) })
 view('/todo', async (ctx) => ViewResult.ok('todo-item.html', { value: { todoId: ctx.query?.id } }))
 ``` 
 
-Please note the Promise if the return type and the use of async in the examples.
+Please note the `Promise` in the return type and the use of async in the examples.
 
 ### Route Context
 Route handlers have only one argument and that is a RouteContext object that is passed in on every call. This object
@@ -245,3 +245,143 @@ To find out more about the signatures reference them [here](https://github.com/e
 All functions can set headers and cookies similar to ViewResult. 
 
 
+## Middleware
+
+This document is not going to cover the pros/cons of using middleware or diving to deep into the concept but resources 
+support adding middleware at various levels. The best way to think about middleware is a pipeline with request start at
+the first section and flowing throw all the sections after it till it reaches the end of the pipe.  In this analogy the
+sections are functions that each request will be passed to in order one after another. 
+
+### Levels of middleware
+1. Resource level: These are defined at the toplevel of the resource.
+2. Route level: Each route `view` or `data` can be provided middleware via options passed in as the last argument.
+3. Method level: For `view` routes there is an alternate form for the handler argument that takes a handler and middleware.
+   Data routes also have an alternate form on each HTTP verb handler (shown below). 
+   
+### Execution order
+Middleware defined on a resource is executed in specific predictable pattern in this order:
+
+1. All middleware at the resource level is executed starting from the first item in the middleware array moving onto the next
+   item until none are left.
+2. Then the middleware is executed for the route that was selected (the one with the matching path) in the same manner.
+3. After the middleware on the method level is executed running through each middleware function provided in the array.
+4. Lastly the route handler is executed effectively being the last function in the chain. 
+
+#### The exception to this order
+All resources have an error handler middleware that is inserted by the unthink-foundation. This handler ensures unhandled
+exceptions don't make it back the client and are logged properly. It also is called when a result is 
+`error/notFound/unauthorized` to log and render this back to teh client. 
+
+For the route handler this behavior is automatically wired up, HOWEVER for raw middleware it is the responsibility of the 
+DEVELOPER to ensure errors are propagated correctly. This will be called out in the examples below.
+
+### Express middleware
+Middleware is strongly typed to the underlying web framework. This done via the use of generics and the reason
+for the `expressResource` function at the start of this document. In the future another underlying
+framework maybe supported but for now express middleware is what will be shown.
+
+Express middleware has the following signatures:
+
+```typescript
+import { Request, Response, NextFunction } from 'express';
+
+// Use if you are doing async functions internally in this middleware
+async function foo(req: Request, resp: Response, next: NextFunction): Promise<void>
+
+// For simple cases
+function foo(req: Request, resp: Response, next: NextFunction): void
+```  
+
+The most important parameter above is the `next` function. This MUST be called to advance the request to the next
+function in the middleware pipeline otherwise the request will end there. For most applications a request should not
+be terminated by the middleware directly. 
+
+If a request needs to end early typically because authentication not being valid or an error then the `next` 
+function should be called with an argument as follows:
+
+```typescript
+import { Request, Response, NextFunction } from 'express';
+import { DataResult } from '@epandco/unthink-foundation';
+
+// Some validation middleware
+function validateToken(req: Request, resp: Response, next: NextFunction): void {
+  const token = getToken(req);
+  if (!validToken(token)) {
+    // Call next with an error 
+    next(DataResult.unauthorized());
+    retun;
+  }
+ 
+  // set the token on the locals, this gets directly map to the RouteContext.local property.
+  resp.locals.token = token; 
+
+  // If all is good let the request keep going.
+  next(); 
+}
+```
+
+### Putting it all together
+The example below a contrived example demonstrating the various levels of middleware and how the data is passed through.
+
+```typescript
+import { expressResource } from '@epandco/unthink-foundation-express';
+import { data, DataResult, view, ViewResult } from '@epandco/unthink-foundation';
+import { Request, Response, NextFunction } from 'express';
+
+function startCount(_req: Request, resp: Response, next: NextFunction): void {
+  resp.locals.counter = 2;
+
+  next();
+}
+
+function bumpCounter(_req: Request, resp: Response, next: NextFunction): void {
+  resp.locals.counter++;
+  next();
+}
+
+export default expressResource({
+  name: 'Counter',
+  basePath: '/counter',
+  // Resource level middleware - called on EVERY route within this resource
+  middleware: [
+    // First piece of middleware that will be executed
+    startCount,
+    // Defining middleware inline and second piece to get executed.
+    (_req, resp, next): void => {
+      // will be 2 a ths point and then multiplying by 3
+      resp.locals.counter = resp.locals.counter * 3;
+      next();
+    }
+  ],
+  routes: [
+    view('/', async (ctx) => {
+      // finally ctx.local.counter will be 8 here
+      return ViewResult.ok('counter.html', { value: { counter: ctx.local?.counter } });
+    }, { // Config object is the last arg to view and you can specify middleware for this view here
+      middleware: [
+        bumpCounter, // counter will be 7 after
+        bumpCounter, // then 8
+      ]
+    }),
+    data('/count', {
+      // Unique to data routes. You can further add middleware per HTTP verb.
+      // This is not applicable to view routes because they do not have multiple HTTP verbs
+      'get': {
+        handler: async (ctx) => {
+          // ctx.local.counter will be 10 now
+          return DataResult.ok({ value: { counter: ctx.local?.counter }});
+        },
+        middleware: [
+          bumpCounter, // counter will go to 8
+          bumpCounter, // counter will go to 9
+          bumpCounter, // counter will go to 10
+        ]
+      }
+    }, { // Similar to view you can add middleware at the route level via the config object
+      middleware: [
+        bumpCounter // count goes to 7
+      ]
+    })
+  ]
+});
+```
