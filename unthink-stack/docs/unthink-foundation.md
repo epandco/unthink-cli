@@ -127,7 +127,85 @@ JSON API and has the following properties:
 
 - Allows the following HTTP verbs: GET, PUT, POST, DELETE
 - The result of the handler is serialized to JSON
-- Controls the HTTP status code based on the kind of result returned
+- The path specified is automatically prepended with `/api` (this can be overridden)
+- Automatically sets the HTTP status code based on the kind of result returned
 
-A very important aspect of this route type is that it tightly controls what the API looks like to the client so its
-predictable.  
+A very important aspect of this route type is that it tightly controls how the API is presented to the client.
+
+Expanding on the todo example the following would define a basic set of CRUD endpoints for a simple a todo api:
+
+```typescript
+import { expressResource} from '@epandco/unthink-foundation-express';
+import { data, DataResult } from '@epandco/unthink-foundation';
+
+interface Todo { id: string, name: string }
+
+let nextId = 0;
+const todos: Todo[] = [];
+
+// Typically export as default for the module
+export default expressResource({
+  name: 'Todo',
+  basePath: '/todo',
+  routes: [
+    // This is the primary form of this function which differs from the view function slightly
+    // with second argument being a map of HTTP verbs that you then specify a handler for
+    data('/todo', {
+      // Only get and post are relevant for this path
+      'get': () => DataResult.ok({ value: todos }), // OK with a value returns a 200
+      'post': (ctx) => {
+        // NOTE: ctx.body should be verified before use, this is only an example.
+        const newTodo = ctx.body as Todo;
+        newTodo.id = (nextId++).toString();
+
+        todos.push(newTodo);
+
+        return DataResult.ok({ value: newTodo.id });
+      }
+    }),
+    data('/todo/:todoId', {
+      // Only get and post are relevant for this path
+      'put': (ctx) => {
+        const id = ctx.params?.todoId;
+        const model = ctx.body as Todo;
+
+        const todo = todos.find(p => p.id === id);
+  
+        if (!todo) {
+          return DataResult.notFound(); // return a 404
+        }
+
+        todo.name = model.name;
+        
+        return DataResult.ok();
+      },
+      'delete': (ctx) => {
+        // NOTE: ctx.body should be verified before use, this is only an example.
+        const id = ctx.params?.todoId;
+
+        const todoIndex = todos.findIndex(p => p.id === id);
+        if (todoIndex < 0) {
+          return DataResult.notFound();
+        }
+ 
+        return DataResult.ok(); 
+      }
+    })
+  ]
+});
+```
+
+### DataResult
+A data route returns a DataResult. The DataResult class has several static functions that should be used to create
+a DataResult object vs trying to create one manually. Below is a high level breakdown of those functions and their role.
+
+To find out more about the signatures reference them [here](https://github.com/epandco/unthink-foundation/blob/master/src/foundation/result.ts#L51).
+
+| function | HTTP Status | purpose |
+|----------|-------------|---------|
+| DataResult.ok | 200 or 204 | Indicates a successful response. If no value is provided a 204 is issued with no body otherwise a 200 is issued with the value in the body. |
+| DataResult.error | 400 | Indicates an error and requires an value to be returned with the error |
+| DataResult.notFound | 404 | To convey situations where the route can't find the requested item |
+| DataResult.unauthorized | 401 | Indicates that this route needs authorization first |
+
+
