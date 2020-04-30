@@ -6,7 +6,7 @@ The Unthink Foundation package provides a lightweight abstraction over express.
 - Routes
     - View Routes
     - Data Routes
-- Middlewarewww
+- Middleware
 
 ## Resources
 
