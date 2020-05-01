@@ -269,7 +269,7 @@ Middleware defined on a resource is executed in specific predictable pattern in 
 #### The exception to this order
 All resources have an error handler middleware that is inserted by the unthink-foundation. This handler ensures unhandled
 exceptions don't make it back the client and are logged properly. It also is called when a result is 
-`error/notFound/unauthorized` to log and render this back to teh client. 
+`error/notFound/unauthorized` to log and render this back to the client. 
 
 For the route handler this behavior is automatically wired up, HOWEVER for raw middleware it is the responsibility of the 
 DEVELOPER to ensure errors are propagated correctly. This will be called out in the examples below.
@@ -278,7 +278,7 @@ DEVELOPER to ensure errors are propagated correctly. This will be called out in 
 ### Express middleware
 Middleware is strongly typed to the underlying web framework. This done via the use of generics and the reason
 for the `expressResource` function at the start of this document. In the future another underlying
-framework maybe supported but for now express middleware is what will be shown.
+framework may be supported but for now express middleware is what will be shown.
 
 Express middleware has the following signatures:
 
@@ -320,13 +320,14 @@ function validateToken(req: Request, resp: Response, next: NextFunction): void {
 }
 ```
 
-`next(DataResult.unauthorized());` within express will skip all the functions after this middleware in the pipeline
-and go directly to the error handler. As stated above, for normal route handlers (which turn into express middleware)
-this is done automatically when it returns an error like `DataResult.unauthorized();` for example. However, for raw
-middleware like the example above it is CRITICAL to call `next` properly. 
+Calling `next` with an error like `next(DataResult.unauthorized());` within express will skip all the functions after
+this middleware in the pipeline and go directly to the error handler. As stated above, for normal route handlers
+(which turn into express middleware) this is done automatically when it returns an error 
+like `DataResult.unauthorized();` for example. However, for raw middleware like the example above it is CRITICAL
+to call `next` properly. 
 
 ### Putting it all together
-The example below a contrived example demonstrating the various levels of middleware and how the data is passed through.
+Below is a very contrived example demonstrating the various levels of middleware and how the data is passed through.
 
 ```typescript
 import { expressResource } from '@epandco/unthink-foundation-express';
@@ -335,7 +336,6 @@ import { Request, Response, NextFunction } from 'express';
 
 function startCount(_req: Request, resp: Response, next: NextFunction): void {
   resp.locals.counter = 2;
-
   next();
 }
 
