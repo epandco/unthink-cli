@@ -1,31 +1,31 @@
-import { injectable } from 'inversify';
-import { MongoClient, Db } from 'mongodb';
+import { MongoClient, Collection, Db } from 'mongodb';
 import * as config from '../config/config';
 
-import 'reflect-metadata';
+const client = new MongoClient(
+  config.mongoDbUrl,
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  }
+);
 
-@injectable()
-export class MongoDbService {
-  private client: MongoClient;
-  private db: Db;
+let defaultDb: Db;
 
-  constructor() {
-    this.client = new MongoClient(
-      config.mongoDbUrl,
-      {
-        useNewUrlParser: true,
-        useUnifiedTopology: true
-      }
-    );
+export function getClient(): MongoClient {
+  return client;
+}
+
+export async function getDefaultDb(): Promise<Db> {
+  if (!defaultDb) {
+    console.log('Creating mongo db services');
+    await client.connect();
+    defaultDb = client.db(config.mongoDbDefaultDatabase);
   }
 
-  public async getDb(): Promise<Db> {
-    if (!this.db) {
-      console.log('Creating mongo db service');
-      await this.client.connect();
-      this.db = this.client.db(config.mongoDbDefaultDatabase);
-    }
+  return defaultDb;
+}
 
-    return this.db;
-  }
+export async function getDefaultCollection<CollectionSchema>(): Promise<Collection<CollectionSchema>> {
+  const db = await getDefaultDb();
+  return db.collection<CollectionSchema>(config.mongoDbDefaultCollection);
 }

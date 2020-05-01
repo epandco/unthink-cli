@@ -15,6 +15,7 @@ function getEnvironmentValue(name: string): string {
 
 export const mongoDbUrl: string = getEnvironmentValue('MONGO_DB_URL');
 export const mongoDbDefaultDatabase = getEnvironmentValue('MONGO_DB_DEFAULT_DB');
+export const mongoDbDefaultCollection = getEnvironmentValue('MONGO_DB_DEFAULT_COLLECTION');
 export const expressServerPort: number = parseInt(getEnvironmentValue('EXPRESS_SERVER_PORT'));
 export const webpackDevServerPort: number | null = process.env.hasOwnProperty('WEBPACK_DEV_PORT') ? parseInt(process.env.WEBPACK_DEV_PORT as string) : null;
 export const isProduction: boolean = !!(process.env.hasOwnProperty('NODE_ENV') && process.env.NODE_ENV && process.env.NODE_ENV.toLowerCase() === 'production');
@@ -26,6 +27,7 @@ export const nunjucksFatalErrorTemplate = getEnvironmentValue('NUNJUCKS_TEMPLATE
 export const nunjucksUnauthorizedTemplate = getEnvironmentValue('NUNJUCKS_TEMPLATE_UNAUTHORIZED');
 
 export const contentBasePath: string = getEnvironmentValue('CONTENT_BASE_PATH');
+export const logLevel: string = getEnvironmentValue('LOG_LEVEL');
 
 export const appName: string = packageJSON.name;
 export const appVersion: string = packageJSON.version;

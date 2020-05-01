@@ -1,21 +1,13 @@
-import { ResourceBase } from './resource-base';
-import { resource, get, template, TemplateResponse, RedirectResponse, ApiResponse, CookieResponse } from 'resource-decorator';
+import { expressResource } from '@epandco/unthink-foundation-express';
+import { data, DataResult, view } from '@epandco/unthink-foundation';
 
-@resource({
-  basePath: '',
-})
-export class HelloWorldResource extends ResourceBase {
-  @template()
-  async indexPage(): Promise<TemplateResponse | RedirectResponse> {
-    return new TemplateResponse('hello-world.html');
-  }
 
-  @get({
-    path: '/api/message'
-  })
-  async getMessage(): Promise<ApiResponse | CookieResponse | void> {
-    return new ApiResponse({
-      message: 'Hello, World'
-    });
-  }
-}
+export default expressResource({
+  name: 'Root',
+  routes: [
+    view('/', 'hello-world.njk'),
+    data('/message', {
+      'get': async () => DataResult.ok({ message: 'Hello, World!'})
+    })
+  ]
+});

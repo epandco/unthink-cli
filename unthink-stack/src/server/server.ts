@@ -4,33 +4,25 @@ import * as https from 'https';
 import * as fs from 'fs';
 import * as cookieParser from 'cookie-parser';
 import * as config from './config/config';
-import {defaultContainer} from './config/di-container';
-import { registerResource } from 'express-register-resource';
-import { ResourceType, registerDefaultRenderer } from 'resource-decorator';
-import { VersionResource } from './resources/version-resource';
-import { HelloWorldResource } from './resources/hello-world-resource';
-import { NunjucksResourceRenderer } from 'nunjucks-resource-renderer';
+import { UnthinkExpressGenerator } from '@epandco/unthink-foundation-express';
+import { renderTemplateWithContextAdded } from './nunjucks-renderer';
+import { UnthinkGenerator } from '@epandco/unthink-foundation';
+import resourceDefinitions from './resource-definitions';
 
 const app: express.Application = express();
 app.use(cookieParser());
 
-// Set up template rendering
-const nunjucksResourceRenderer = new NunjucksResourceRenderer(
-  config.nunjucksBaseTemplatePath,
-  {
-    'APP_VERSION': config.appVersion,
-    'IS_PRODUCTION': config.isProduction
-  },
-  config.nunjucksNotFoundTemplate,
-  config.nunjucksExpectedErrorTemplate,
-  config.nunjucksFatalErrorTemplate,
-  config.nunjucksUnauthorizedTemplate
+const expressGen = new UnthinkExpressGenerator(
+  app,
+  renderTemplateWithContextAdded,
+  config.logLevel
 );
-registerDefaultRenderer(ResourceType.TEMPLATE, nunjucksResourceRenderer);
+const unthinkGen = new UnthinkGenerator(expressGen);
 
-// Register resources here
-registerResource(app, VersionResource, defaultContainer);
-registerResource(app, HelloWorldResource, defaultContainer);
+resourceDefinitions.forEach(rd => unthinkGen.add(rd));
+
+unthinkGen.printRouteTable();
+unthinkGen.generate();
 
 // For local development, the webpack dev server is used to serve up bundles
 if (!config.isProduction) {

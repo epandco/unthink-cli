@@ -1,57 +1,158 @@
 # Unthink CLI
 
-This repo contains code for the `unthink` cli tool used to initialize and work with the Unthink stack. In addition, the stack itself
-is embedded in this project under `./src/unthink-stack` and is the base template this tool works off of when creating a
-new project. The contents of `./src/unthink-stack` are copied verbatim over to the target folder for the new project 
-and then modified after via gluegun commands/templates. 
+The Unthink CLI is a tool to make creating and working in projects utilizing
+the Unthink Stack easier.
 
-## Quick start
+The Unthink Stack is a specialized web stack built on top of Express with both
+the server and client code written in TypeScript. For more information on the
+stack see its [documentation](./unthink-stack/docs/README.md).
 
-To pull this repo down and test the CLI run the following commands in the repo
+## Quick Start
+
+Install from [npm](https://www.npmjs.com/package/@epandco/unthink):
+
+    npm install --global @epandco/unthink
+
+
+Create a new project off of the current directory:
+
+    unthink init project-name
+
+From the project directory, install dependencies:
+
+    npm install
+
+Run the project:
+
+    npm start
+
+If the project is using MongoDB via the provided docker configuration,
+you should also run the following in a new terminal:
+
+    docker-compose up
+
+## CLI Commands
+
+### help
+
+`help` (alias `h`) will output the list of commands.
+
+### initialize
+
+`initialize` (aliases `init` and `i`) is used to start a new project.
+
+You must provide a valid project name (kebab-case) and optionally the path for
+the new project.
+
+Examples:
+
+    # create "my-new-project" off of current directory:
+    unthink init my-new-project
+    
+    # create "my-new-project" off of the path specified:
+    unthink init path/to/my-new-project
+
+### generate
+
+The `generate` (aliases `gen` and `g`) command aids day-to-day project work by
+creating certain common project elements from templates.
+
+Using the command by itself will output a list of available generators:
+
+    unthink gen
+
+Following are built-in generators provided with the CLI.
+
+#### entry
+
+The `entry` generator adds a new entry point for Webpack in the frontend layer.
+Entries go in the `src/client/entries` folder and are made up of (by default) a
+TypeScript file and Riot component. This command must be run from a project's
+root. Entry names must be kebab-case and at least two words in length (forced
+style to match the W3 spec on custom components).
+
+    unthink gen entry about-page
+
+#### riot
+
+The `riot` generator adds a new Riot component at the path specified. Component
+names must be kebab-case and at least two words in length (forced style to match
+the W3 spec on custom components).
+
+By default, the new Riot Component will include the `<script type="ts">` and
+`<style type="scss">` blocks:
+
+    unthink gen riot ./some/path/my-new-component
+
+Use the `--no-script` option flag to skip generating the `<script>` block.
+
+Use the `--no-style` option flag to skip generating the `<style>` block. 
+
+## Contributing
+
+Bugs, questions, enhancement ideas, proposals etc., should all be handled via
+this repo's [issues board](https://github.com/epandco/unthink-cli/issues).
+
+Try to give as much detail as you can, and use the labels.
+
+### Developing and running the CLI locally
+
+To pull this repo down and test the CLI, run the following commands in the repo:
 
 ```
-npm i
+npm install
 npm run build
 npm link
 ```
 
-After those commands are finished you will then be able to run the `unthink` cli as follows
+Note: if you already have the CLI installed globally from npm, you should
+uninstall it first.
 
-```
-# in a new directory somewhere (not in the stack repo please!) you can run
-unthink init my-unthinkable-project
-```
+After those commands finish you will then be able to run the `unthink` CLI as
+if you had installed it globally from npm.
 
-It will create a directory called `my-unthinkable-project` with the the `unthink-stack` ready to run and where applicable
-(e.g package.json) the project name will be set to `my-unthinkable-project`. Please refere to the UNTHINK.md file in the
-generated stack for details on how to get started with the Unthink stack.
+### Submitting Updates
 
+Make a pull request with your changes. Make sure to reference any related
+issues if they exist!
 
-## The Unthink stack
+Note: make sure you've properly followed the project style and linted before
+making your PR.
 
-As noted previously the full stack is embedded in this repo. To maintain and update the base template for the stack
-it can be run directly in `./unthink-stack` folder like this
+## The Unthink Stack
 
-```
-# First change directory into the stack folder
-cd ./unthink-stack
+For the documentation on how the stack works and how to use it,
+look [here](./unthink-stack/docs/unthink-foundation.md).
 
-# npm will not be scoped to this folder and run the npm install for the package.json in this folder
-npm i
+The template for the Unthink Stack is part of this repo (in `./unthink-stack`).
+The CLI uses this template when creating new projects with the `initialize`
+command.
 
-# run the stack normally
+To maintain and update this template, it can be run directly in
+`./unthink-stack` folder like this:
 
-docker-compose up # if you are using the db, skip if not
-npm start
-```
+    # First change directory into the stack folder
+    cd ./unthink-stack
+    
+    # npm will not be scoped to this folder and run the npm install for the
+    # package.json in this folder
+    npm i
+    
+    # run the stack normally
+    
+    # if you are using the db, skip if not
+    docker-compose up
+    
+    npm start
+
 
 This way changes can be tested and verified in the stack before committing them. 
 
 ## gluegun
 
-This project is using gluegun see the docs [here](https://github.com/infinitered/gluegun/tree/master/docs)
+This project is using gluegun see the docs
+[here](https://github.com/infinitered/gluegun/tree/master/docs).
 
 # License
 
-MIT - see LICENSE
-
+MIT - see [LICENSE](LICENSE)
