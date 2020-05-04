@@ -63,6 +63,7 @@ const command: GluegunCommand = {
     const targetPath = `${projectPath}`;
     const baseStackDir = path.join(__dirname, '../../unthink-stack');
 
+
     // Unless the user is forcing creation
     // bail even if the path exists even if it's just an empty directory
     if (!force && await fsExtra.pathExists(targetPath)) {
@@ -84,6 +85,14 @@ const command: GluegunCommand = {
       errorOnExist: !force,
       filter: (src: string) => ignorePath.every(path => path.test(src) === false)
     });
+
+    // NPM does not keep the .gitignore in the unthink-stack when it installs the CLI/
+    // So as a workaround the unthink-stack/.gitignore is copied to unthink-stack/.stack-gitignore
+    // and needs to be moved back to .gitignore in the target
+    const stackGitIgnore = path.join(targetPath, '.stack-gitignore');
+    const targetGitignore = path.join(targetPath, '.gitignore');
+
+    await fsExtra.move(stackGitIgnore, targetGitignore);
 
     await toolbox.package.loadAndUpdate(
       path.join(targetPath, 'package.json'),

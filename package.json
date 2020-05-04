@@ -13,9 +13,10 @@
   "scripts": {
     "lint": "./node_modules/.bin/eslint \"src/**/*.{js,ts}\" --quiet --fix",
     "clean-build": "./node_modules/.bin/shx rm -rf ./lib",
+    "clean-unthink-stack": "./node_modules/.bin/shx rm -rf ./unthink-stack/lib ./unthink-stack/node_modules ./unthink-stack/.env ./unthink-stack/public",
     "compile": "./node_modules/.bin/tsc -p .",
     "copy-templates": "./node_modules/.bin/shx cp -R ./src/templates ./lib/",
-    "build": "npm run lint && npm run clean-build && npm run compile && npm run copy-templates",
+    "build": "npm run lint && npm run clean-build && npm run clean-unthink-stack && npm run compile && npm run copy-templates",
     "prepublishOnly": "npm run build",
     "test": "./node_modules/.bin/jest",
     "watch": "./node_modules/.bin/jest --watch",
