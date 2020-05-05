@@ -7,7 +7,7 @@ export default expressResource({
   routes: [
     view('/', 'hello-world.njk'),
     data('/message', {
-      'get': async () => DataResult.ok({ message: 'Hello, World!'})
+      'get': async () => DataResult.ok({ value: { message: 'Hello, World!'} })
     })
   ]
 });
