@@ -12,6 +12,17 @@ import resourceDefinitions from './resource-definitions';
 const app: express.Application = express();
 app.use(cookieParser());
 
+// For local development, the webpack dev server is used to serve up bundles
+if (!config.isProduction) {
+  /* eslint-disable */
+  const { forwardToWebpackDevServer } =  require('./webpack-proxy');
+  /* eslint-enable */
+  app.all('/public/js/*', forwardToWebpackDevServer);
+
+  // In production, assets should be served via nginx
+  app.use('/public/', express.static(path.join(process.cwd(), 'public')));
+}
+
 const expressGen = new UnthinkExpressGenerator(
   app,
   renderTemplateWithContextAdded,
@@ -24,16 +35,7 @@ resourceDefinitions.forEach(rd => unthinkGen.add(rd));
 unthinkGen.printRouteTable();
 unthinkGen.generate();
 
-// For local development, the webpack dev server is used to serve up bundles
 if (!config.isProduction) {
-  /* eslint-disable */
-  const { forwardToWebpackDevServer } =  require('./webpack-proxy');
-  /* eslint-enable */
-  app.all('/public/js/*', forwardToWebpackDevServer);
-
-  // In production, assets should be served via nginx
-  app.use('/public/', express.static(path.join(process.cwd(), 'public')));
-
   // Enable HTTPS for local development
   https.createServer(
     {
