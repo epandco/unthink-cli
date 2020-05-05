@@ -121,11 +121,23 @@ const command: GluegunCommand = {
       }
     );
 
+    // init .env file from the env.local file
+
+    await fsExtra.copy(
+      path.join(targetPath, '.env.local'),
+      path.join(targetPath, '.env'),
+      {
+        overwrite: force
+      }
+    );
+
     await toolbox.template.generate({
       template: 'README.md.ejs',
       target: path.join(targetPath, 'README.md'),
       props: { projectName },
     });
+
+    await toolbox.system.exec('npm install',  { cwd: targetPath });
 
     spinner.succeed('Initialized project');
   },
