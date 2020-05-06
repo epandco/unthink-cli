@@ -27,7 +27,7 @@ Other project dependencies will be managed by `npm`.
 
 ## Documentation
 
-- [Getting Started Quickly by Using the CLI](../../README.md)
-- [Server Fundamentals](./unthink-foundation.md)
-- [Client Workflow](./client-workflow.md)
+- [Getting Started Quickly by Using the CLI](../README.md)
+- [Server Fundamentals](unthink-foundation.md)
+- [Client Workflow](client-workflow.md)
 

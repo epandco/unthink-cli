@@ -21,7 +21,8 @@
     "test": "./node_modules/.bin/jest",
     "watch": "./node_modules/.bin/jest --watch",
     "snapupdate": "./node_modules/.bin/jest --updateSnapshot",
-    "coverage": "./node_modules/.bin/jest --coverage"
+    "coverage": "./node_modules/.bin/jest --coverage",
+    "serve-docs": "./node_modules/.bin/docsify serve ./docs --port 3010"
   },
   "repository": {
     "type": "git",
@@ -57,6 +58,7 @@
     "@types/node": "^12.12.37",
     "@typescript-eslint/eslint-plugin": "^2.30.0",
     "@typescript-eslint/parser": "^2.30.0",
+    "docsify-cli": "^4.4.0",
     "eslint": "^6.8.0",
     "jest": "^25.5.1",
     "shx": "^0.3.2",

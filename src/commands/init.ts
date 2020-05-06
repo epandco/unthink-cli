@@ -114,7 +114,7 @@ const command: GluegunCommand = {
 
     // move existing readme to preserve it.
     await fsExtra.move(
-      path.join(targetPath, 'README.md'),
+      path.join(targetPath, 'unthink-stack.md'),
       path.join(targetPath, 'UNTHINK.md'),
       {
         overwrite: force
@@ -132,8 +132,8 @@ const command: GluegunCommand = {
     );
 
     await toolbox.template.generate({
-      template: 'README.md.ejs',
-      target: path.join(targetPath, 'README.md'),
+      template: 'unthink-stack.md.ejs',
+      target: path.join(targetPath, 'unthink-stack.md'),
       props: { projectName },
     });
 
