@@ -1,6 +1,6 @@
 {
   "name": "unthink-stack",
-  "version": "0.1.1",
+  "version": "0.1.0",
   "description": "A TypeScript full-stack solution",
   "main": "lib/server/server.js",
   "scripts": {
@@ -97,6 +97,6 @@
     "silent": true
   },
   "unthink": {
-    "version": "2.0.1"
+    "version": "2.0.2"
   }
 }
