@@ -20,12 +20,13 @@
     "lint-server-fail": "./node_modules/.bin/eslint \"src/server/**/*.{js,ts}\" --quiet",
     "lint-client-fail": "./node_modules/.bin/eslint \"src/client/**/*.{js,ts}\" --quiet",
     "lint-sass-fail": "./node_modules/.bin/stylelint \"src/client/sass/**/*.scss\" \"src/client/**/*.riot\" --config \"src/client/.stylelintrc\"",
-    "build": "npm run build-server && npm run build-content && npm run build-public",
+    "clean-build": "./node_modules/.bin/shx rm -rf ./lib ./public",
+    "build": "npm run clean-build && npm run build-server && npm run build-content && npm run build-public",
     "build-server": "./node_modules/.bin/tsc --project ./src/server/tsconfig.json",
     "build-client": "./node_modules/.bin/webpack --config ./scripts/webpack.prod.js",
-    "build-content": "./node_modules/.bin/copyfiles -u 1 \"src/content/**/*\" ./lib",
+    "build-content": "./node_modules/.bin/shx cp -R ./src/content ./lib/",
     "build-sass": "./node_modules/.bin/sass src/client/sass/main.scss public/css/main.css --style=compressed",
-    "build-public": "./node_modules/.bin/copyfiles -u 3 \"./src/client/public/**/*\" ./public"
+    "build-public": "./node_modules/.bin/shx cp -R ./src/client/public ./public/"
   },
   "keywords": [
     "typescript",
@@ -56,7 +57,6 @@
     "babel-loader": "^8.1.0",
     "clean-webpack-plugin": "^3.0.0",
     "concurrently": "^5.2.0",
-    "copyfiles": "^2.2.0",
     "core-js": "^3.6.5",
     "eslint": "^6.8.0",
     "http-proxy": "^1.18.0",
@@ -76,7 +76,8 @@
     "webpack-dev-server": "^3.10.3",
     "webpack-hot-middleware": "^2.25.0",
     "webpack-merge": "^4.2.2",
-    "whatwg-fetch": "^3.0.0"
+    "whatwg-fetch": "^3.0.0",
+    "shx": "^0.3.2"
   },
   "dependencies": {
     "@epandco/unthink-foundation": "^1.0.0",
