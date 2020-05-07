@@ -5,7 +5,7 @@ the Unthink Stack easier.
 
 The Unthink Stack is a specialized web stack built on top of Express with both
 the server and client code written in TypeScript. For more information on the
-stack see its [documentation](unthink-stack/docs/unthink-stack.md).
+stack see its [documentation](docs/unthink-stack.md).
 
 ## Quick Start
 
