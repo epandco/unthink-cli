@@ -51,14 +51,14 @@ const faviconGenerator: GluegunCommand = {
     favicons(
       srcImgPath,
       faviconConfig,
-      (error, response) => {
+      async (error, response) => {
         if (error) {
           spinner.fail('Failed to create favicon set');
           return;
         }
 
         // Write each generated favicon file
-        Promise.all(
+        await Promise.all(
           response.images.map(async (file) => {
             await writeFile(join(faviconDir, file.name), file.contents);
           })
