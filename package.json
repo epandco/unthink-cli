@@ -49,6 +49,8 @@
   ],
   "license": "MIT",
   "dependencies": {
+    "@epandco/unthink-foundation": "^1.0.1",
+    "@epandco/unthink-foundation-express": "^1.0.6",
     "@types/fs-extra": "^8.1.0",
     "favicons": "^6.0.0",
     "fs-extra": "^9.0.0",
