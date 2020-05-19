@@ -88,7 +88,7 @@ Use the `--no-script` option flag to skip generating the `<script>` block.
 
 Use the `--no-style` option flag to skip generating the `<style>` block. 
 
-### favicon
+#### favicon
 The `favicon` generator creates a complete favicon set from a single source image.
 The generated favicon files are written to `src/client/public/favicons` by default,
 but an optional parameter can be added to specify a custom output directory.
