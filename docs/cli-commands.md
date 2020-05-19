@@ -54,3 +54,17 @@ By default, the new Riot Component will include the `<script type="ts">` and
 Use the `--no-script` option flag to skip generating the `<script>` block.
 
 Use the `--no-style` option flag to skip generating the `<style>` block. 
+
+### favicon
+The `favicon` generator creates a complete favicon set from a single source image.
+The generated favicon files are written to `src/client/public/favicons` by default,
+but an optional parameter can be added to specify a custom output directory.
+    
+    # Create a favicon set in the default output directory
+    unthink gen favicon path/to/source.png
+    
+    # Create a favicon set in a custom output directory
+    unthink gen favicon path/to/source.png path/to/output
+
+Please note: the `favicon` generator only creates the favicon files themselves. Any
+markup to include the favicons in a template will need to be handled manually.
