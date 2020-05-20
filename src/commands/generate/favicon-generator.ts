@@ -1,6 +1,6 @@
 import { GluegunToolbox, GluegunCommand } from 'gluegun';
 import { join } from 'path';
-import { pathExists, writeFile, ensureDir } from 'fs-extra';
+import { ensureDir, pathExists, writeFile } from 'fs-extra';
 import * as favicons from 'favicons';
 
 const faviconGenerator: GluegunCommand = {
@@ -23,16 +23,24 @@ const faviconGenerator: GluegunCommand = {
       return;
     }
 
-    // Check if public directory exists (src/client/public)
-    const publicDir = join(process.cwd(), 'src', 'client', 'public');
-    if (!(await pathExists(publicDir))) {
-      toolbox.print.error('Could not find the public directory. Please ensure "./src/client/public" exists.');
-      return;
+    // Set output directory - defaults to public directory
+    let outputDir: string;
+    if (toolbox.parameters.second) {
+      outputDir = join(process.cwd(), toolbox.parameters.second);
+    } else {
+      const publicDir = join(process.cwd(), 'src', 'client', 'public');
+      if (!(await pathExists(publicDir))) {
+        toolbox.print.error('Could not find the public directory. Please ensure "./src/client/public" exists.');
+        return;
+      }
+      outputDir = join(publicDir, 'favicons');
     }
 
-    // Create favicon directory
-    const faviconDir = join(publicDir, 'favicons');
-    await ensureDir(faviconDir);
+    // Start spinner
+    const spinner = toolbox.print.spin('Creating favicon set...');
+
+    // Create output directory if it doesn't already exist
+    await ensureDir(outputDir);
 
     // Favicons options
     const faviconConfig = {
@@ -45,25 +53,26 @@ const faviconGenerator: GluegunCommand = {
       }
     };
 
-    const spinner = toolbox.print.spin('Creating favicon set...');
-
     // Create favicon set
     favicons(
       srcImgPath,
       faviconConfig,
       async (error, response) => {
+        // Handle error
         if (error) {
           spinner.fail('Failed to create favicon set');
+          toolbox.print.error(error);
           return;
         }
 
         // Write each generated favicon file
         await Promise.all(
           response.images.map(async (file) => {
-            await writeFile(join(faviconDir, file.name), file.contents);
+            await writeFile(join(outputDir, file.name), file.contents);
           })
         );
 
+        // Stop spinner (success)
         spinner.succeed('Favicon set created');
       }
     );
