@@ -1,8 +1,7 @@
 import { appName } from '../config/config';
-import { expressResource } from '@epandco/unthink-foundation-express';
-import { view, ViewResult } from '@epandco/unthink-foundation';
+import { unthinkResource, view, ViewResult } from '@epandco/unthink-foundation';
 
-export default expressResource({
+export default unthinkResource({
   name: 'Version',
   basePath: '/unthink/version',
   routes: [
