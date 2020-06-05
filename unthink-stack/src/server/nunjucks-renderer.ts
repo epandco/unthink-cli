@@ -28,18 +28,18 @@ export function renderTemplateWithContextAdded(result: Result, _ctx: RouteContex
     // Successful status codes should not make it to this function
     let template: string;
     switch (result.status) {
-    case 400:
-    case 500:
-      template = 'error.njk';
-      break;
-    case 401:
-      template = 'unauthorized.njk';
-      break;
-    case 404:
-      template = 'not-found.njk';
-      break;
-    default:
-      throw new Error(`A default template for status code ${result.status} is not supported in the render function`);
+      case 400:
+      case 500:
+        template = 'error.njk';
+        break;
+      case 401:
+        template = 'unauthorized.njk';
+        break;
+      case 404:
+        template = 'not-found.njk';
+        break;
+      default:
+        throw new Error(`A default template for status code ${result.status} is not supported in the render function`);
     }
 
     return render(template, result.value as object);
