@@ -23,10 +23,10 @@ Here is the start of that `todo` resource.
 ```typescript
 // src/server/resources/todo-resource.ts
 
-import { expressResource} from '@epandco/unthink-foundation-express';
+import { unthinkResource } from '@epandco/unthink-foundation';
 
 // Typically export as default for the module
-export default expressResource({
+export default unthinkResource({
   name: 'Todo',
   basePath: '/todo',
   routes: [
@@ -57,7 +57,7 @@ export default [
 
 Routes are the next logical unit you encounter when defining a resource. Each route defines a path and depending on the
 type one or more handlers which is where the logic goes to handle a request. It is important to note that a route
-DOES NOT have access to the underlying request from express. The unthink-foundation package provides a `RouteContext`
+DOES NOT have access to the underlying request in the backing web framework like Express. The unthink-foundation package provides a `RouteContext`
 object to the route each time it is called. 
 
 This decision to hide the underlying request was intentional. This abstraction over a general purpose
@@ -93,11 +93,53 @@ contains all the needed context from the incoming request and below is a quick o
 |----------|---------|
 | query | Contains the query parameters.  |
 | params | Houses the path parameters. |
+| path | the full path of the route. |
 | body | If the request has a body it will be on this property. Typically this is a JSON object being sent by the client. |
 | local | Directly mapped to the `response.locals` from the express Response object. Used to pass data between middleware and route handlers. |
 | logger | A Pino logger instance. This SHOULD BE used for ALL logging for ANY HTTP requests with no exception. Do not use console.log in route handlers or code called within a route handlers. |
 | headers | Access to the incoming headers. |
 | cookies | The incoming cookies. |
+
+#### A quick note on the RouteContext.local property
+Since version 2.1.0 of `unthink-foundation` the local property is now readonly. Currently, you can't add or remove properties for the `local` object,
+and you should NEVER modify any references on this object. 
+
+Quick examples of what Readonly prevents, and the edge cases it can't prevent that SHOULD BE avoided.
+
+```typescript
+// local is set to { person: { firstName: ..., lastName ... } }
+const local = ctx.local;
+
+// What Readonly prevents:
+local.someNewValue = 'Tring to create a new property on local'; // compile time error
+local.person = { firstName: '', lastName: '' }; // cant reassign an existing property
+
+// Readonly applies one level deep e.g only the keys/properties on local
+// however one can modify properties on sub objects like person.
+// This is normal and it's how references works - but again AVOID IT.
+const person: Person = local.person;
+if (person) {
+  person.firstName = 'a new value';
+}
+```
+
+The proper way to set `local` on the context is using the `local` on the options of the various `Result` objects
+based on the route type.
+
+An example using `MiddlewareResult` but applies to `Data` and `View` results as well. 
+```typescript
+import { MiddlewareResult } from '@epandco/unthink-foundation';
+
+return MiddlewareResult.continue({
+  local: { 
+    someNewValue: 'Setting a new key on local',
+    // overwrites person if it exists
+    person: { firstName: 'new value', lastName: 'some' }
+  },
+});
+```
+
+The `local` object returned will be merged with the current `local` and then passed to the next route/middleware handler in the pipeline. 
 
 ## View Routes
 A view route is defined by using the `view` function provided by the unthink-foundation package and has the
@@ -110,11 +152,10 @@ following properties:
 In keeping with the todo app the following are a few potential routes:
 
 ```typescript
-import { expressResource} from '@epandco/unthink-foundation-express';
-import { view, ViewResult } from '@epandco/unthink-foundation';
+import { unthinkResource, view, ViewResult } from '@epandco/unthink-foundation';
 
 // Typically export as default for the module
-export default expressResource({
+export default unthinkResource({
   name: 'Todo',
   basePath: '/todo',
   routes: [
@@ -142,7 +183,7 @@ export default expressResource({
 View routes have to return a ViewResult. This ViewResult class offers up several static helper functions to create
 the ViewResult. These functions SHOULD be used vs trying to construct one manually.
 
-Below is a high level breakdown of those functions (for the signatures check out the definition [here](https://github.com/epandco/unthink-foundation/blob/master/src/foundation/result.ts#L89):
+Below is a high level breakdown of those functions (for the signatures check out the definition [here](https://github.com/epandco/unthink-foundation/blob/34d86842b915027510d67437c0e8ba91eaee7f66/src/foundation/result.ts#L93):
 
 _Note: All functions below render the supplied template and pass the optional value into the template if supplied._
 
@@ -170,8 +211,7 @@ A very important aspect of this route type is that it tightly controls how the A
 Expanding on the todo example the following would define a basic set of CRUD endpoints for a simple a todo api:
 
 ```typescript
-import { expressResource} from '@epandco/unthink-foundation-express';
-import { data, DataResult } from '@epandco/unthink-foundation';
+import { unthinkResource, data, DataResult } from '@epandco/unthink-foundation';
 
 interface Todo { id: string, name: string }
 
@@ -179,7 +219,7 @@ let nextId = 0;
 const todos: Todo[] = [];
 
 // Typically export as default for the module
-export default expressResource({
+export default unthinkResource({
   name: 'Todo',
   basePath: '/todo',
   routes: [
@@ -233,17 +273,17 @@ export default expressResource({
 A data route returns a DataResult. The DataResult class has several static functions that should be used to create
 a DataResult object vs trying to create one manually. Below is a high level breakdown of those functions and their role.
 
-To find out more about the signatures reference them [here](https://github.com/epandco/unthink-foundation/blob/master/src/foundation/result.ts#L51).
+To find out more about the signatures reference them [here](https://github.com/epandco/unthink-foundation/blob/34d86842b915027510d67437c0e8ba91eaee7f66/src/foundation/result.ts#L52).
 
 | function | HTTP Status | purpose |
 |----------|-------------|---------|
 | DataResult.ok | 200 or 204 | Indicates a successful response. If no value is provided a 204 is issued with no body otherwise a 200 is issued with the value in the body. |
+| DataResult.redirect | 302 (default) | Issues a redirect to the target url. To redirect within this app use relative paths. |
 | DataResult.error | 400 | Indicates an error and requires an value to be returned with the error. |
 | DataResult.notFound | 404 | To convey situations where the route can't find the requested item. |
 | DataResult.unauthorized | 401 | Indicates that this route needs authorization first. |
 
 All functions can set headers and cookies similar to ViewResult. 
-
 
 ## Middleware
 
@@ -254,7 +294,7 @@ sections are functions that each request will be passed to in order one after an
 
 ### Levels of middleware
 1. Resource level: These are defined at the toplevel of the resource.
-2. Route level: Each route `view` or `data` can be provided middleware via options passed in as the last argument.
+2. Route level: Each route `view` or `data` can provide middleware via options passed in as the last argument.
 3. Method level: Only applicable to data routes which have an alternate form on each HTTP verb handler (shown below). 
    
 ### Execution order
@@ -271,101 +311,125 @@ All resources have an error handler middleware that is inserted by the unthink-f
 exceptions don't make it back the client and are logged properly. It also is called when a result is 
 `error/notFound/unauthorized` to log and render this back to the client. 
 
-For the route handler this behavior is automatically wired up, HOWEVER for raw middleware it is the responsibility of the 
+For unthink route and middleware handlers this behavior is automatically wired up, HOWEVER for raw middleware it is the responsibility of the 
 DEVELOPER to ensure errors are propagated correctly. This will be called out in the examples below.
 
+### UnthinkMiddleware
+UnthinkFoundation packages provide an abstraction over underlying middleware where applicable or can be used in cases like AWS Lambda/Azure functions as
+the middleware pipeline.
 
-### Express middleware
-Middleware is strongly typed to the underlying web framework. This done via the use of generics and the reason
-for the `expressResource` function at the start of this document. In the future another underlying
-framework may be supported but for now express middleware is what will be shown.
+There are a few reasons for this decision:
 
-Express middleware has the following signatures:
+1. Code is more portable and not tied to a specific underlying middleware implementation (e.g. Express).
+2. Follows same semantics as the route handlers and very consistent.
+3. For platforms like AWS Lambda/Azure functions where middleware isn't a thing - this abstraction provides that layer. 
+
+This addition now makes it possible for resources to be written once and swap out the backend generators to target various platforms
+with no code changes. 
+
+#### Types of middleware
+UnthinkMiddleware has a typ which not only expresses the intent of the code but also allows the underlying generator make small optimizations
+when building the middleware pipelines for a route. 
+
+#### Types (each item below is the function used to make that type)
+- agnosticMiddleware - Not specific to `view` or `data` routes and thus should be inserted in the pipeline for both types. 
+- viewMiddleware - Should only apply to `view` routes and not be inserted into `data` routes. 
+- dataMiddleware - `data` only middleware and should not be in the `view` route pipeline. 
+- rawMiddleware - Not provided by the `UnthinkFoundation` package MUST be provided by the underlying web framework generator package and may not always be present. 
+
+All types except `raw` take in the same `RouteContext` route handlers do and have the following signature:
 
 ```typescript
-import { Request, Response, NextFunction } from 'express';
-
-// Use if you are doing async functions internally in this middleware
-async function foo(req: Request, resp: Response, next: NextFunction): Promise<void>
-
-// For simple cases
-function foo(req: Request, resp: Response, next: NextFunction): void
-```  
-
-The most important parameter above is the `next` function. This MUST be called to advance the request to the next
-function in the middleware pipeline otherwise the request will end there. For most applications a request should not
-be terminated by the middleware directly. 
-
-If a request needs to end early typically because authentication not being valid or an error then the `next` 
-function should be called with an argument as follows:
-
-```typescript
-import { Request, Response, NextFunction } from 'express';
-import { DataResult } from '@epandco/unthink-foundation';
-
-// Some validation middleware
-function validateToken(req: Request, resp: Response, next: NextFunction): void {
-  const token = getToken(req);
-  if (!validToken(token)) {
-    // Call next with an error 
-    next(DataResult.unauthorized());
-    retun;
-  }
- 
-  // set the token on the locals, this gets directly map to the RouteContext.local property.
-  resp.locals.token = token; 
-
-  // If all is good let the request keep going.
-  next(); 
-}
+(context: RouteContext): Promise<MiddlewareResult>
 ```
 
-Calling `next` with an error like `next(DataResult.unauthorized());` within express will skip all the functions after
-this middleware in the pipeline and go directly to the error handler. As stated above, for normal route handlers
-(which turn into express middleware) this is done automatically when it returns an error 
-like `DataResult.unauthorized();` for example. However, for raw middleware like the example above it is CRITICAL
-to call `next` properly. 
+The underlying type is set by the wrapper functions above and not directly. 
+  
+### MiddlewareResult
+All but `raw` middleware return a `MiddlewareResult`. Just like `ViewResult` and `DataResult` it offers up static functions that should be used to construct
+a `MiddlewareResult` instead of directly trying to create it.
+
+To find out more about the signatures reference them [here](https://github.com/epandco/unthink-foundation/blob/34d86842b915027510d67437c0e8ba91eaee7f66/src/foundation/result.ts#L132).
+
+| function | HTTP Status | purpose |
+|----------|-------------|---------|
+| MiddlewareResult.continue | n/a | Continues to next function in the middleware pipeline. |
+| MiddlewareResult.end | n/a | Stops pipeline and returns the value passed in as the body of the request with a given status code. |
+| MiddlewareResult.redirect | 302 (default) | Issues a redirect to the target url. To redirect within this app use relative paths. |
+| MiddlewareResult.error | 400 | Indicates an error and requires an value to be returned with the error. |
+| MiddlewareResult.notFound | 404 | To convey situations where the route can't find the requested item. |
+| MiddlewareResult.unauthorized | 401 | Indicates that this route needs authorization first. |
+
+_Note: Only `continute` will advance to the next function and eventually hits a route handler. All others will either stop the pipeline_
+immediately (`end` | `redirect`) or bypass the rest of the functions and invoke the error handler.  
+
+All functions can set headers and cookies similar to ViewResult. 
 
 ### Putting it all together
-Below is a very contrived example demonstrating the various levels of middleware and how the data is passed through.
+Below is a very contrived example demonstrating all but `raw` middleware which is intentionally left out of this document. 
 
 ```typescript
-import { expressResource } from '@epandco/unthink-foundation-express';
-import { data, DataResult, view, ViewResult } from '@epandco/unthink-foundation';
-import { Request, Response, NextFunction } from 'express';
+import { 
+  unthinkResource,
+  agnosticMiddleware,
+  viewMiddleware,
+  dataMiddleware,
+  MiddlewareResult,
+  data,
+  DataResult,
+  view,
+  ViewResult
+} from '@epandco/unthink-foundation';
 
-function startCount(_req: Request, resp: Response, next: NextFunction): void {
-  resp.locals.counter = 2;
-  next();
-}
+const viewBumpCount = viewMiddleware(ctx => {
+  if (!ctx.local.viewCount) {
+    const initialCount = ctx.local.initCount;
+    return MiddlewareResult.continue({
+      local: { viewCount: initialCount }
+    });
+  }
 
-function bumpCounter(_req: Request, resp: Response, next: NextFunction): void {
-  resp.locals.counter++;
-  next();
-}
+  return MiddlewareResult.continue({
+    local: { viewCount: ctx.local.viewCount++ }
+  });
+});
 
-export default expressResource({
+const dataBumpCount = viewMiddleware(ctx => {
+  if (!ctx.local.dataCount) {
+    const initialCount = ctx.local.initCount;
+    return MiddlewareResult.continue({
+      local: { viewCount: initialCount }
+    });
+  }
+
+  return MiddlewareResult.continue({
+    local: { dataCount: ctx.local.dataCount++ }
+  });
+});
+
+const seedCount = agnosticMiddleware(ctx => {
+  return MiddlewareResult.continue({ local: { initCount: 2 }});
+});
+
+export default unthinkResource({
   name: 'Counter',
   basePath: '/counter',
   // Resource level middleware - called on EVERY route within this resource
   middleware: [
     // First piece of middleware that will be executed
-    startCount,
-    // Defining middleware inline and second piece to get executed.
-    (_req, resp, next): void => {
-      // will be 2 a ths point and then multiplying by 3
-      resp.locals.counter = resp.locals.counter * 3;
-      next();
-    }
+    seedCount, // applied to all route types
+    viewBumpCount, // These two only applies on view routes - viewCount after = 3
+    dataBumpCount // only applies to data routes - dataCount after = 3
   ],
   routes: [
     view('/', async (ctx) => {
-      // finally ctx.local.counter will be 8 here
-      return ViewResult.ok('counter.html', { value: { counter: ctx.local?.counter } });
+      // finally ctx.local.counter will be 7 here
+      return ViewResult.ok('counter.html', { value: { counter: ctx.local?.viewCount } });
     }, { // Config object is the last arg to view and you can specify middleware for this view here
       middleware: [
-        bumpCounter, // counter will be 7 after
-        bumpCounter, // then 8
+        viewBumpCount, // viewCount = 4
+        viewBumpCount, // viewCount = 5 
+        dataBumpCount // viewCount = 6
       ]
     }),
     data('/count', {
@@ -373,18 +437,19 @@ export default expressResource({
       // This is not applicable to view routes because they do not have multiple HTTP verbs
       'get': {
         handler: async (ctx) => {
-          // ctx.local.counter will be 10 now
-          return DataResult.ok({ value: { counter: ctx.local?.counter }});
+          // ctx.local.counter will be 8 now
+          return DataResult.ok({ value: { counter: ctx.local?.dataCount }});
         },
         middleware: [
-          bumpCounter, // counter will go to 8
-          bumpCounter, // counter will go to 9
-          bumpCounter, // counter will go to 10
+          dataBumpCount, // dataCount = 5
+          dataBumpCount, // dataCount = 6
+          dataBumpCount, // dataCount = 7
         ]
       }
     }, { // Similar to view you can add middleware at the route level via the config object
       middleware: [
-        bumpCounter // count goes to 7
+        viewMiddleware, // will be stripped out of the pipeline silently
+        dataBumpCount, // dataCount = 4
       ]
     })
   ]
