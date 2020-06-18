@@ -1,6 +1,6 @@
 {
   "name": "@epandco/unthink",
-  "version": "2.0.2",
+  "version": "3.0.0",
   "description": "A cli for creating projects in the unthink stack.",
   "types": "lib/types/types.d.ts",
   "unthink": {

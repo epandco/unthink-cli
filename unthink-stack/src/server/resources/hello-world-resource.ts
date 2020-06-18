@@ -1,8 +1,7 @@
-import { expressResource } from '@epandco/unthink-foundation-express';
-import { data, DataResult, view } from '@epandco/unthink-foundation';
+import { unthinkResource, data, DataResult, view } from '@epandco/unthink-foundation';
 
 
-export default expressResource({
+export default unthinkResource({
   name: 'Root',
   routes: [
     view('/', 'hello-world.njk'),
