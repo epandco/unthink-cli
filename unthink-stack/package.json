@@ -5,10 +5,10 @@
   "main": "lib/server/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "env-check": "node ./scripts/env-check.js",
-    "start": "npm run env-check && npm run build && node ./scripts/dev.js",
-    "serve": "./node_modules/.bin/nodemon --config ./scripts/nodemon.server.json ./lib/server/server.js",
-    "watch-client": "./node_modules/.bin/nodemon --config ./scripts/nodemon.client.json --exec \"./node_modules/.bin/webpack-dev-server --config ./scripts/webpack.dev.js\"",
+    "start": "echo \"Server and client must now be run separately via 'npm run server' and 'npm run client'\" && exit 1",
+    "server": "node ./lib/server/server.js | pino-pretty --ignore req,res,responseTime,unthinkHandlerError,err --messageFormat=\"{msg} {unthinkHandlerError}\"",
+    "client": "node ./scripts/dev.js",
+    "watch-entries": "webpack-dev-server --config ./scripts/webpack.dev.js",
     "watch-server": "./node_modules/.bin/tsc -w --project ./src/server/tsconfig.json",
     "watch-content": "./node_modules/.bin/onchange \"src/content/**/*\" -- npm run build-content",
     "watch-public": "./node_modules/.bin/onchange \"src/client/public/**/*\" -- npm run build-public",
@@ -26,7 +26,7 @@
     "build-client": "./node_modules/.bin/webpack --config ./scripts/webpack.prod.js",
     "build-content": "./node_modules/.bin/shx cp -R ./src/content ./lib/",
     "build-sass": "./node_modules/.bin/sass src/client/sass/main.scss public/css/main.css --style=compressed",
-    "build-public": "./node_modules/.bin/shx cp -R ./src/client/public ./public/"
+    "build-public": "./node_modules/.bin/shx cp -R ./src/client/public/. ./public/"
   },
   "keywords": [
     "typescript",
