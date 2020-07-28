@@ -85,7 +85,7 @@ module.exports = function check(sourceFile, contents, fileRoot) {
   let map;
   /* eslint-enable */
 
-  const sourceFileWithoutExtension = sourceFile.replace('ts', '');
+  const sourceFileWithoutExtension = sourceFile.replace('.ts', '.');
 
   // Create a compilerHost object to allow the compiler to read and write files
   const compilerHost = {
