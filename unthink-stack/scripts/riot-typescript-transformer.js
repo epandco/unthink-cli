@@ -77,6 +77,15 @@ function resolveModuleNames(
 const config = JSON.parse(fs.readFileSync(path.join(CLIENT_ROOT_PATH, 'tsconfig.json')).toString());
 const compilerOptions = ts.parseJsonConfigFileContent(config, ts.sys, CLIENT_ROOT_PATH).options;
 
+function stripTSExtension(filename) {
+  if (!filename.endsWith('ts')) {
+    return filename;
+  }
+
+  // leaving the "." on purpose
+  return filename.slice(0, -2);
+}
+
 module.exports = function check(sourceFile, contents, fileRoot) {
   /* eslint-disable */
   // Any compiled code will be stored in `output`
@@ -85,7 +94,7 @@ module.exports = function check(sourceFile, contents, fileRoot) {
   let map;
   /* eslint-enable */
 
-  const sourceFileWithoutExtension = sourceFile.replace('.ts', '.');
+  const sourceFileWithoutExtension = stripTSExtension(sourceFile);
 
   // Create a compilerHost object to allow the compiler to read and write files
   const compilerHost = {
