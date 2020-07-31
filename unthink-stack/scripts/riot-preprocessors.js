@@ -9,8 +9,6 @@ const { initRiotTypeScriptPreprocessor } = require('@epandco/riot-typescript-pre
 
 const CLIENT_ROOT_PATH = join(process.cwd(), 'src', 'client');
 
-console.log(process.cwd());
-
 initRiotTypeScriptPreprocessor(registerPreprocessor, {
   sourcePath: CLIENT_ROOT_PATH
 });
