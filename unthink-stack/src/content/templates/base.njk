@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>{{ page_title }}</title>
-  <link rel="stylesheet" type="text/css" href="/public/css/main.css?v={{APP_VERSION}}"/>
+  <link rel="stylesheet" type="text/css" href="{{ PUBLIC_FILES_HOST }}/public/css/main.css?v={{APP_VERSION}}"/>
 </head>
 <body>
 {% block body %}{% endblock %}
-<script src="/public/js/polyfillsES5.bundle.js" nomodule></script>
-<script src="/public/js/polyfillsES2015.bundle.js"></script>
+<script src="{{ PUBLIC_FILES_HOST }}/public/js/polyfillsES5.bundle.js" nomodule></script>
+<script src="{{ PUBLIC_FILES_HOST }}/public/js/polyfillsES2015.bundle.js"></script>
 {% block scripts_bottom %}{% endblock %}
 </body>
 </html>

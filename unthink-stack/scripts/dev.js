@@ -1,16 +1,10 @@
+/* This script is run via `npm run client`. It utilizes Concurrently to run
+ * the different front-end tasks (Sass, Webpack, etc.)
+ */
+
 const concurrently = require('concurrently');
 
 concurrently([
-  {
-    command: 'npm:serve | ./node_modules/.bin/pino-pretty --ignore req,res,responseTime,unthinkHandlerError,err --messageFormat="{msg} {unthinkHandlerError}"',
-    name: 'server',
-    prefixColor: 'blue.bold'
-  },
-  {
-    command: 'npm:watch-server',
-    name: 'ts',
-    prefixColor: 'cyan.bold'
-  },
   {
     command: 'npm:watch-content',
     name: 'content',
@@ -27,7 +21,7 @@ concurrently([
     prefixColor: 'magenta.bold'
   },
   {
-    command: 'npm:watch-client',
+    command: 'npm:watch-entries',
     name: 'webpack',
     prefixColor: 'bgGreen.gray.bold'
   }
