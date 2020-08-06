@@ -20,13 +20,13 @@
     "lint-server-fail": "./node_modules/.bin/eslint \"src/server/**/*.{js,ts}\" --quiet",
     "lint-client-fail": "./node_modules/.bin/eslint \"src/client/**/*.{js,ts}\" --quiet",
     "lint-sass-fail": "./node_modules/.bin/stylelint \"src/client/sass/**/*.scss\" \"src/client/**/*.riot\" --config \"src/client/.stylelintrc\"",
-    "clean-build": "./node_modules/.bin/shx rm -rf ./lib ./public",
+    "clean-build": "./node_modules/.bin/shx rm -rf ./lib ./public && shx mkdir -p \"public\"",
     "build": "npm run clean-build && npm run build-server && npm run build-content && npm run build-public",
     "build-server": "./node_modules/.bin/tsc --project ./src/server/tsconfig.json",
     "build-client": "./node_modules/.bin/webpack --config ./scripts/webpack.prod.js",
     "build-content": "./node_modules/.bin/shx cp -R ./src/content ./lib/",
     "build-sass": "./node_modules/.bin/sass src/client/sass/main.scss public/css/main.css --style=compressed",
-    "build-public": "./node_modules/.bin/shx cp -R ./src/client/public/. ./public/"
+    "build-public": "./node_modules/.bin/shx cp -R ./src/client/public/. ./public"
   },
   "keywords": [
     "typescript",
