@@ -92,7 +92,7 @@ const command: GluegunCommand = {
     const stackGitIgnore = path.join(targetPath, '.stack-gitignore');
     const targetGitignore = path.join(targetPath, '.gitignore');
 
-    await fsExtra.move(stackGitIgnore, targetGitignore);
+    await fsExtra.move(stackGitIgnore, targetGitignore, { overwrite: true });
 
     await toolbox.package.loadAndUpdate(
       path.join(targetPath, 'package.json'),
@@ -114,12 +114,14 @@ const command: GluegunCommand = {
 
     // move existing readme to preserve it.
     await fsExtra.move(
-      path.join(targetPath, 'unthink-stack.md'),
+      path.join(targetPath, 'README.md'),
       path.join(targetPath, 'UNTHINK.md'),
       {
         overwrite: force
       }
     );
+
+    console.log('after move');
 
     // init .env file from the env.local file
 
@@ -132,8 +134,8 @@ const command: GluegunCommand = {
     );
 
     await toolbox.template.generate({
-      template: 'unthink-stack.md.ejs',
-      target: path.join(targetPath, 'unthink-stack.md'),
+      template: 'README.md.ejs',
+      target: path.join(targetPath, 'README.md'),
       props: { projectName },
     });
 
