@@ -22,9 +22,14 @@ From the project directory, install dependencies:
 
     npm install
 
-Run the project:
+Build the project:
 
-    npm start
+    npm run build
+
+Then, run the server and client projects in separate terminals:
+
+    npm run server
+    npm run client
 
 If the project is using MongoDB via the provided docker configuration,
 you should also run the following in a new terminal:
