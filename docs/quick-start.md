@@ -18,9 +18,18 @@ The CLI will install dependencies for you.
 
 ## Run the Project
 
-Use the following to start the development environment:
+From the project directory, install dependencies:
 
-    npm start
+    npm install
+
+Build the project:
+
+    npm run build
+
+Then, run the server and client projects in separate terminals:
+
+    npm run server
+    npm run client
 
 This builds and runs the server as well as the client side workflow. If you
 are using the provided MongoDB Docker instance, run it in a separate terminal:

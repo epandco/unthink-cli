@@ -7,7 +7,8 @@ const nunjucksEnvironment = configure(config.nunjucksBaseTemplatePath, { autoesc
 
 const nunjucksContext = {
   'APP_VERSION': config.appVersion,
-  'IS_PRODUCTION': config.isProduction
+  'IS_PRODUCTION': config.isProduction,
+  'PUBLIC_FILES_HOST': `https://localhost:${config.webpackDevServerPort}`
 };
 
 function render(template: string, value: object | undefined): string {
