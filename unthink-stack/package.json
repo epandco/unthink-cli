@@ -61,7 +61,6 @@
     "core-js": "^3.6.5",
     "eslint": "^7.5.0",
     "http-proxy": "^1.18.1",
-    "nodemon": "^2.0.4",
     "onchange": "^7.0.2",
     "pino-pretty": "^4.1.0",
     "pre-commit": "^1.2.2",
