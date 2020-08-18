@@ -5,7 +5,7 @@ export default unthinkResource({
   name: 'Version',
   basePath: '/unthink/version',
   routes: [
-    view('/', async () => ViewResult.ok('version.html', {
+    view('/', async () => ViewResult.ok('version.njk', {
       value: { appName: appName}
     }))
   ]
