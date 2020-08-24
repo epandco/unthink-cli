@@ -26,6 +26,7 @@ getDirectoryNames(path.join(_rootPath, 'src', 'client', 'entries'))
     });
 
 const babelOptions = {
+  cacheDirectory: true,
   presets: [
     [
       '@babel/preset-env',
