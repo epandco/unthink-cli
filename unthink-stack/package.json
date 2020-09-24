@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "echo \"Server and client must now be run separately via 'npm run server' and 'npm run client'\" && exit 1",
-    "server": "node ./lib/server/server.js | pino-pretty --ignore req,res,responseTime,unthinkHandlerError,err --messageFormat=\"{msg} {unthinkHandlerError}\"",
+    "server": "npm run build-server && npm run build-content && node ./lib/server/server.js | pino-pretty --ignore req,res,responseTime,unthinkHandlerError,err --messageFormat=\"{msg} {unthinkHandlerError}\"",
     "client": "node ./scripts/dev.js",
     "watch-entries": "webpack-dev-server --config ./scripts/webpack.dev.js",
     "watch-server": "./node_modules/.bin/tsc -w --project ./src/server/tsconfig.json",
