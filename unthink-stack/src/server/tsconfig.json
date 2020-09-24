@@ -1,10 +1,25 @@
 {
-  "extends": "../../tsconfig",
   "compilerOptions": {
     "baseUrl": "./",
-    "outDir": "../../lib/server"
+    "outDir": "../../lib/server",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "es2019",
+    "pretty": true,
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "strictNullChecks": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
   },
   "include": [
     "./**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
   ]
 }

@@ -1,16 +1,29 @@
 {
-  "extends": "../../tsconfig",
   "compilerOptions": {
     "baseUrl": "./",
     "module": "es2015",
+    "moduleResolution": "node",
     "downlevelIteration": true,
     "target": "esnext",
     "lib": [
       "dom", "esnext", "scripthost", "es5"
-    ]
+    ],
+    "pretty": true,
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "strictNullChecks": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
   },
   "include": [
     "./**/*.ts",
     "./**/*.riot"
+  ],
+  "exclude": [
+    "node_modules"
   ]
 }
