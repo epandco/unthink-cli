@@ -11,7 +11,7 @@ const nunjucksContext = {
   'PUBLIC_FILES_HOST': `https://localhost:${config.webpackDevServerPort}`
 };
 
-function render(template: string, value: object | undefined): string {
+function render(template: string, value: Record<string, unknown> | undefined): string {
   const fullValue = { ...value, ...nunjucksContext};
   const rendered = nunjucksEnvironment.render(template, fullValue);
 
@@ -20,7 +20,7 @@ function render(template: string, value: object | undefined): string {
 
 export function renderTemplateWithContextAdded(result: Result, _ctx: RouteContext): string {
   if (result instanceof ViewResult) {
-    return render(result.template as string, result.value as object);
+    return render(result.template as string, result.value as Record<string, unknown>);
   }
 
   if (result instanceof MiddlewareResult) {
@@ -43,7 +43,7 @@ export function renderTemplateWithContextAdded(result: Result, _ctx: RouteContex
         throw new Error(`A default template for status code ${result.status} is not supported in the render function`);
     }
 
-    return render(template, result.value as object);
+    return render(template, result.value as Record<string, unknown>);
   }
 
   throw new Error('Result is not supported');
