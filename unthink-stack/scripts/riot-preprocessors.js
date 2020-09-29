@@ -10,7 +10,8 @@ const { initRiotTypeScriptPreprocessor } = require('@epandco/riot-typescript-pre
 const CLIENT_ROOT_PATH = join(process.cwd(), 'src', 'client');
 
 initRiotTypeScriptPreprocessor(registerPreprocessor, {
-  sourcePath: CLIENT_ROOT_PATH
+  sourcePath: CLIENT_ROOT_PATH,
+  riotTypingsPath: join(CLIENT_ROOT_PATH, 'typings.d.ts')
 });
 
 // Riot preprocessor for handling Sass inside Riot tags.
