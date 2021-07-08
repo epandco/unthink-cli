@@ -18,10 +18,6 @@
     "copy-templates": "./node_modules/.bin/shx cp -R ./src/templates ./lib/",
     "build": "npm run lint && npm run clean-build && npm run clean-unthink-stack && npm run compile && npm run copy-templates",
     "prepublishOnly": "npm run build",
-    "test": "./node_modules/.bin/jest",
-    "watch": "./node_modules/.bin/jest --watch",
-    "snapupdate": "./node_modules/.bin/jest --updateSnapshot",
-    "coverage": "./node_modules/.bin/jest --coverage",
     "serve-docs": "./node_modules/.bin/docsify serve ./docs --port 3010"
   },
   "repository": {
@@ -56,20 +52,12 @@
   "devDependencies": {
     "@types/favicons": "^6.2.2",
     "@types/fs-extra": "^9.0.12",
-    "@types/jest": "^26.0.24",
     "@types/node": "^16.0.1",
     "@typescript-eslint/eslint-plugin": "^4.28.2",
     "@typescript-eslint/parser": "^4.28.2",
     "docsify-cli": "^4.4.3",
     "eslint": "^7.30.0",
-    "jest": "^27.0.6",
     "shx": "^0.3.3",
-    "ts-jest": "^27.0.3",
-    "ts-node": "^10.0.0",
     "typescript": "^4.3.5"
-  },
-  "jest": {
-    "preset": "ts-jest",
-    "testEnvironment": "node"
   }
 }
