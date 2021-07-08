@@ -49,24 +49,24 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "favicons": "^6.2.0",
-    "fs-extra": "^9.0.1",
-    "gluegun": "latest"
+    "favicons": "^6.2.2",
+    "fs-extra": "^10.0.0",
+    "gluegun": "^4.6.1"
   },
   "devDependencies": {
-    "@types/favicons": "^5.5.0",
-    "@types/fs-extra": "^9.0.1",
-    "@types/jest": "^26.0.14",
-    "@types/node": "^12.12.62",
-    "@typescript-eslint/eslint-plugin": "^4.2.0",
-    "@typescript-eslint/parser": "^4.2.0",
-    "docsify-cli": "^4.4.1",
-    "eslint": "^7.10.0",
-    "jest": "^26.4.2",
-    "shx": "^0.3.2",
-    "ts-jest": "^26.4.0",
-    "ts-node": "^9.0.0",
-    "typescript": "^4.0.3"
+    "@types/favicons": "^6.2.2",
+    "@types/fs-extra": "^9.0.12",
+    "@types/jest": "^26.0.24",
+    "@types/node": "^16.0.1",
+    "@typescript-eslint/eslint-plugin": "^4.28.2",
+    "@typescript-eslint/parser": "^4.28.2",
+    "docsify-cli": "^4.4.3",
+    "eslint": "^7.30.0",
+    "jest": "^27.0.6",
+    "shx": "^0.3.3",
+    "ts-jest": "^27.0.3",
+    "ts-node": "^10.0.0",
+    "typescript": "^4.3.5"
   },
   "jest": {
     "preset": "ts-jest",
