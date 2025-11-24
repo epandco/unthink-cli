@@ -51,7 +51,7 @@
   "dependencies": {
     "favicons": "^6.2.0",
     "fs-extra": "^9.0.1",
-    "gluegun": "latest"
+    "gluegun": "5.2.1"
   },
   "devDependencies": {
     "@types/favicons": "^5.5.0",
